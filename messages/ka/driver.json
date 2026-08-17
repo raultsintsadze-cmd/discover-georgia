@@ -1,0 +1,14 @@
+{
+  "pageTitle": "მოგზაურობის მოთხოვნები",
+  "emptyTitle": "მოთხოვნები ჯერ არ არის",
+  "emptyDescription": "თქვენზე მიბმული ახალი მოთხოვნები აქ გამოჩნდება.",
+  "updateErrorToastTitle": "მოთხოვნის განახლება ვერ მოხერხდა",
+  "acceptedToast": "დადასტურებულია",
+  "declinedToast": "უარყოფილია",
+  "tripIdLabel": "მოგზაურობა #{id}",
+  "passengersCount": "{count, plural, other {# მგზავრი}}",
+  "priceLabel": "{amount} ლარი",
+  "viewDetails": "დეტალების ნახვა",
+  "decline": "უარყოფა",
+  "accept": "დადასტურება"
+}

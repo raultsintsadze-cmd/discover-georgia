@@ -1,0 +1,17 @@
+{
+  "applyPageTitle": "Become a creator",
+  "applySignInPrompt": "Sign in to apply as a creator.",
+  "displayNameField": "Display name",
+  "bioField": "Bio",
+  "instagramField": "Instagram",
+  "tiktokField": "TikTok",
+  "handlePlaceholder": "@handle",
+  "submitError": "Couldn't submit your application.",
+  "genericError": "Something went wrong. Please try again.",
+  "successToastTitle": "Application submitted",
+  "successToastDescription": "We'll review it shortly.",
+  "submitButton": "Submit application",
+  "profilePageTitle": "Creator",
+  "videosLabel": "Videos",
+  "placesLabel": "Places"
+}

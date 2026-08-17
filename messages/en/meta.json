@@ -1,0 +1,9 @@
+{
+  "defaultTitle": "Discover Georgia",
+  "titleTemplate": "%s · Discover Georgia",
+  "defaultDescription": "See Georgia. Build your journey.",
+  "regionTitleSuffix": "Destinations in Georgia",
+  "regionFallbackDescription": "Real places to visit in {region}, Georgia.",
+  "categoryTitleSuffix": "Things to Do in Georgia",
+  "categoryFallbackDescription": "Real {category} destinations across Georgia."
+}

@@ -1,0 +1,20 @@
+{
+  "pageTitle": "Запрос на поездку",
+  "tripFallbackName": "Поездка",
+  "noPlaces": "Мест нет",
+  "notSelected": "Не выбран",
+  "routeLabel": "Маршрут",
+  "datesLabel": "Даты",
+  "passengersLabel": "Пассажиры",
+  "distanceLabel": "Расстояние",
+  "drivingTimeLabel": "Время в пути",
+  "estimatedPriceLabel": "ПРИМЕРНАЯ СТОИМОСТЬ",
+  "driverLabel": "Водитель",
+  "notesLabel": "Заметки",
+  "statusPending": "Ожидание",
+  "statusDriverAccepted": "Водитель принял",
+  "statusConfirmed": "Подтверждено",
+  "statusInProgress": "В процессе",
+  "statusCompleted": "Завершено",
+  "statusCancelled": "Отменено"
+}

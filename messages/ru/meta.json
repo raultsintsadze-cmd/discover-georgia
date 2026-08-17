@@ -1,0 +1,9 @@
+{
+  "defaultTitle": "Discover Georgia",
+  "titleTemplate": "%s · Discover Georgia",
+  "defaultDescription": "Познайте Грузию. Постройте своё путешествие.",
+  "regionTitleSuffix": "Направления в Грузии",
+  "regionFallbackDescription": "Реальные места для посещения в регионе {region}, Грузия.",
+  "categoryTitleSuffix": "Чем заняться в Грузии",
+  "categoryFallbackDescription": "Реальные направления категории «{category}» по всей Грузии."
+}

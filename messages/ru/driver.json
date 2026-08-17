@@ -1,0 +1,14 @@
+{
+  "pageTitle": "Запросы на поездку",
+  "emptyTitle": "Пока нет запросов",
+  "emptyDescription": "Новые запросы, назначенные вам, появятся здесь.",
+  "updateErrorToastTitle": "Не удалось обновить запрос",
+  "acceptedToast": "Принято",
+  "declinedToast": "Отклонено",
+  "tripIdLabel": "Поездка №{id}",
+  "passengersCount": "{count, plural, one {# пассажир} few {# пассажира} many {# пассажиров} other {# пассажира}}",
+  "priceLabel": "{amount} GEL",
+  "viewDetails": "Посмотреть детали",
+  "decline": "Отклонить",
+  "accept": "Принять"
+}

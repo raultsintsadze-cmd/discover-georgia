@@ -1,0 +1,18 @@
+{
+  "pageTitle": "ჰკითხე AI-ს",
+  "chipOptimizeRoute": "მარშრუტის ოპტიმიზაცია",
+  "chipOptimizeBudget": "ბიუჯეტის ოპტიმიზაცია",
+  "chipOptimizeComfort": "კომფორტის ოპტიმიზაცია",
+  "chipMoreNature": "მეტი ბუნება",
+  "chipMoreCulture": "მეტი კულტურა",
+  "chipMaxDestinations": "მაქსიმუმ მიმართულებები",
+  "respondErrorToastTitle": "AI-მ ვერ უპასუხა",
+  "respondErrorToastDescription": "გთხოვთ, სცადოთ ხელახლა.",
+  "startError": "საუბრის დაწყება ვერ მოხერხდა. გთხოვთ, სცადოთ ხელახლა.",
+  "greeting": "მთხოვე დამატო ადგილები, შევცვალო თარიღები, შევამოწმო სავალი დრო ან გამოვთვალო ღირებულება — ვისარგებლებ რეალური მონაცემებით ყველაფრისთვის, რასაც მეტყვი.",
+  "tripUpdated": "✓ მოგზაურობა განახლდა",
+  "usedLabel": "გამოყენებულია: {tools}",
+  "inputPlaceholder": "იკითხე შენი მოგზაურობის შესახებ...",
+  "sendLabel": "გაგზავნა",
+  "thinkingLabel": "ფიქრობს"
+}

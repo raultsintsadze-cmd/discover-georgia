@@ -1,0 +1,154 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * Design tokens — Discover Georgia
+ *
+ * Palette rationale: warm, sun/wine/mountain-inspired neutrals instead of
+ * the blue/teal default most travel apps reach for. Single theme for v1
+ * (no light/dark toggle) — the bottom nav and video-feed overlays use a
+ * dedicated dark "chrome" treatment locally (see .chrome-* utilities
+ * below) regardless of the page theme, for the cinematic full-screen video
+ * moments, while page content stays on the warm-light surface for
+ * readability across long-form place descriptions, forms, and the future
+ * admin panel.
+ */
+@layer base {
+  :root {
+    /* Surfaces */
+    --surface-0: 39 33% 97%; /* page background */
+    --surface-1: 0 0% 100%; /* cards */
+    --surface-2: 36 29% 93%; /* subtle fill / hover */
+    --border: 36 23% 87%;
+
+    /* Ink (text) */
+    --ink-900: 27 15% 9%; /* primary text */
+    --ink-700: 25 10% 24%; /* secondary text */
+    --ink-500: 27 8% 42%; /* muted text */
+    --ink-on-accent: 39 33% 97%;
+
+    /* Brand accent — Georgian sun/terracotta */
+    --accent-500: 19 74% 42%;
+    --accent-600: 19 80% 34%;
+    --accent-tint: 19 74% 95%;
+
+    /* Secondary accent — wine, used sparingly (badges, highlights) */
+    --wine-500: 351 52% 32%;
+    --wine-tint: 351 52% 95%;
+
+    /* Semantic */
+    --success-500: 142 43% 33%;
+    --success-tint: 142 43% 94%;
+    --warning-500: 38 68% 40%;
+    --warning-tint: 38 68% 94%;
+    --danger-500: 3 57% 52%;
+    --danger-tint: 3 57% 95%;
+
+    /* Chrome (dark overlay UI: bottom nav, video captions) */
+    --chrome-bg: 27 20% 8%;
+    --chrome-ink: 39 33% 97%;
+    --chrome-ink-muted: 39 15% 80%;
+    --chrome-border: 39 20% 100% / 0.08;
+
+    /* Radii */
+    --radius-sm: 0.5rem;
+    --radius-md: 0.875rem;
+    --radius-lg: 1.25rem;
+    --radius-full: 999px;
+
+    /* Motion */
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --duration-fast: 150ms;
+    --duration-base: 250ms;
+    --duration-slow: 400ms;
+
+    /* Touch */
+    --touch-target: 2.75rem; /* 44px minimum, per spec */
+
+    /* Typography — system stacks (no external font fetch required).
+       Display uses a serif stack for a cinematic editorial feel on
+       hero headings; body stays on the native sans stack for legibility
+       and zero web-font weight. */
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-display: ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: hsl(var(--surface-0));
+    color: hsl(var(--ink-900));
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    min-height: 100dvh;
+  }
+
+  ::selection {
+    background-color: hsl(var(--accent-500) / 0.2);
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--accent-500));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Safe-area padding for notches / gesture bars / home indicators. */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pl-safe {
+    padding-left: env(safe-area-inset-left);
+  }
+  .pr-safe {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Dark "chrome" surface used by the bottom nav and video overlays. */
+  .chrome-surface {
+    background-color: hsl(var(--chrome-bg) / 0.72);
+    backdrop-filter: blur(20px) saturate(1.4);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    color: hsl(var(--chrome-ink));
+  }
+
+  /* Reserves space at the bottom of scrollable tab content so the fixed
+     BottomNav never overlaps the last item. Nav content is ~60px tall;
+     4.5rem (72px) leaves a small buffer before adding the safe-area inset. */
+  .pb-nav {
+    padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

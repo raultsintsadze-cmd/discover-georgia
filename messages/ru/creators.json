@@ -1,0 +1,17 @@
+{
+  "applyPageTitle": "Стать автором",
+  "applySignInPrompt": "Войдите, чтобы подать заявку автора.",
+  "displayNameField": "Отображаемое имя",
+  "bioField": "О себе",
+  "instagramField": "Instagram",
+  "tiktokField": "TikTok",
+  "handlePlaceholder": "@ник",
+  "submitError": "Не удалось отправить заявку.",
+  "genericError": "Что-то пошло не так. Попробуйте ещё раз.",
+  "successToastTitle": "Заявка отправлена",
+  "successToastDescription": "Мы скоро её рассмотрим.",
+  "submitButton": "Отправить заявку",
+  "profilePageTitle": "Автор",
+  "videosLabel": "Видео",
+  "placesLabel": "Места"
+}

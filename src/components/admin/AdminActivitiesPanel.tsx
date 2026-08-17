@@ -1,0 +1,234 @@
+"use client";
+
+import * as React from "react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Field } from "@/components/ui/Field";
+import { Input, Textarea } from "@/components/ui/Input";
+import { Modal, ModalTrigger, ModalContent } from "@/components/ui/Modal";
+import { PlacePicker } from "@/components/place/PlacePicker";
+import { Spinner } from "@/components/ui/Spinner";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { useToast } from "@/components/ui/Toast";
+import type { PlaceSummary } from "@/lib/services/place.service";
+import type { ActivityDTO } from "@/lib/services/activity.service";
+
+const CATEGORIES = ["TOUR", "WINE_TASTING", "ADVENTURE", "CULTURE", "GENERAL"] as const;
+const SELECT_CLASS = "h-touch w-full rounded-md border border-border bg-surface-1 px-3.5 text-body text-ink-900 focus-visible:border-accent-500";
+
+interface FormState {
+  name: string;
+  place: PlaceSummary | null;
+  category: (typeof CATEGORIES)[number];
+  description: string;
+  rating: string;
+  price: string;
+  bookingUrl: string;
+}
+
+const EMPTY: FormState = { name: "", place: null, category: "GENERAL", description: "", rating: "", price: "", bookingUrl: "" };
+
+function ActivityForm({ initial, onSubmit, submitLabel }: { initial: FormState; onSubmit: (payload: Record<string, unknown>) => Promise<{ ok: boolean; message?: string }>; submitLabel: string }) {
+  const { toast } = useToast();
+  const [values, setValues] = React.useState(initial);
+  const [submitting, setSubmitting] = React.useState(false);
+
+  function set<K extends keyof FormState>(key: K, value: FormState[K]) {
+    setValues((v) => ({ ...v, [key]: value }));
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!values.place) {
+      toast({ title: "Pick a place", variant: "danger" });
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const result = await onSubmit({
+        name: values.name,
+        nearPlaceId: values.place.id,
+        category: values.category,
+        description: values.description || undefined,
+        rating: values.rating ? Number(values.rating) : undefined,
+        price: values.price ? Number(values.price) : undefined,
+        bookingUrl: values.bookingUrl || undefined,
+      });
+      if (!result.ok) {
+        toast({ title: "Couldn't save", description: result.message, variant: "danger" });
+        return;
+      }
+      toast({ title: "Saved", variant: "success" });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <Field label="Name" required>
+        {(f) => <Input {...f} value={values.name} onChange={(e) => set("name", e.target.value)} required />}
+      </Field>
+      <Field label="Near place" required>
+        {() => <PlacePicker value={values.place} onChange={(p) => set("place", p)} />}
+      </Field>
+      <Field label="Category" required>
+        {(f) => (
+          <select {...f} className={SELECT_CLASS} value={values.category} onChange={(e) => set("category", e.target.value as FormState["category"])}>
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c.replaceAll("_", " ")}
+              </option>
+            ))}
+          </select>
+        )}
+      </Field>
+      <Field label="Description">
+        {(f) => <Textarea {...f} value={values.description} onChange={(e) => set("description", e.target.value)} />}
+      </Field>
+      <div className="grid grid-cols-2 gap-3">
+        <Field label="Rating (0-5)">
+          {(f) => <Input {...f} type="number" min={0} max={5} step="0.1" value={values.rating} onChange={(e) => set("rating", e.target.value)} />}
+        </Field>
+        <Field label="Price (GEL)">
+          {(f) => <Input {...f} type="number" min={0} value={values.price} onChange={(e) => set("price", e.target.value)} />}
+        </Field>
+      </div>
+      <Field label="Booking URL">
+        {(f) => <Input {...f} type="url" value={values.bookingUrl} onChange={(e) => set("bookingUrl", e.target.value)} />}
+      </Field>
+      <Button type="submit" loading={submitting} className="mt-2">
+        {submitLabel}
+      </Button>
+    </form>
+  );
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  TOUR: "Tour",
+  WINE_TASTING: "Wine tasting",
+  ADVENTURE: "Adventure",
+  CULTURE: "Culture",
+  GENERAL: "Activity",
+};
+
+export function AdminActivitiesPanel() {
+  const { toast } = useToast();
+  const [loading, setLoading] = React.useState(true);
+  const [activities, setActivities] = React.useState<ActivityDTO[]>([]);
+  const [createOpen, setCreateOpen] = React.useState(false);
+  const [editingId, setEditingId] = React.useState<string | null>(null);
+
+  const load = React.useCallback(() => {
+    setLoading(true);
+    fetch("/api/admin/activities")
+      .then((r) => r.json())
+      .then((b) => setActivities(b.data ?? []))
+      .finally(() => setLoading(false));
+  }, []);
+
+  React.useEffect(() => {
+    load();
+  }, [load]);
+
+  async function handleDelete(id: string, name: string) {
+    if (!window.confirm(`Delete "${name}"?`)) return;
+    const res = await fetch(`/api/admin/activities/${id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const body = await res.json();
+      toast({ title: "Couldn't delete", description: body?.error?.message, variant: "danger" });
+      return;
+    }
+    toast({ title: "Deleted", variant: "success" });
+    load();
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-10">
+        <Spinner />
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      <Modal open={createOpen} onOpenChange={setCreateOpen}>
+        <ModalTrigger asChild>
+          <Button size="sm" className="self-start">
+            <Plus className="h-4 w-4" aria-hidden="true" />
+            New activity
+          </Button>
+        </ModalTrigger>
+        <ModalContent title="New activity">
+          <ActivityForm
+            initial={EMPTY}
+            submitLabel="Create activity"
+            onSubmit={async (payload) => {
+              const res = await fetch("/api/admin/activities", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+              });
+              const body = await res.json();
+              if (res.ok) {
+                setCreateOpen(false);
+                load();
+              }
+              return { ok: res.ok, message: body?.error?.message };
+            }}
+          />
+        </ModalContent>
+      </Modal>
+
+      {activities.length === 0 ? (
+        <EmptyState title="No activities yet" description="Add the first one above." />
+      ) : (
+        <div className="flex flex-col divide-y divide-border rounded-lg border border-border">
+          {activities.map((a) => (
+            <div key={a.id} className="flex items-center justify-between gap-3 p-3">
+              <div className="min-w-0">
+                <p className="truncate text-body-sm font-medium text-ink-900">{a.name}</p>
+                <p className="truncate text-caption text-ink-500">
+                  {CATEGORY_LABELS[a.category] ?? a.category} · {a.rating != null ? `${a.rating.toFixed(1)}★` : "Not rated"} ·{" "}
+                  {a.price != null ? `${a.price} GEL` : "No price"}
+                </p>
+              </div>
+              <div className="flex shrink-0 gap-1">
+                <Modal open={editingId === a.id} onOpenChange={(open) => setEditingId(open ? a.id : null)}>
+                  <ModalTrigger asChild>
+                    <Button size="icon" variant="ghost" aria-label={`Edit ${a.name}`}>
+                      <Pencil className="h-4 w-4" aria-hidden="true" />
+                    </Button>
+                  </ModalTrigger>
+                  <ModalContent title={`Edit ${a.name}`}>
+                    <ActivityForm
+                      initial={{ ...EMPTY, name: a.name, category: a.category as FormState["category"], description: a.description ?? "", rating: a.rating != null ? String(a.rating) : "", price: a.price != null ? String(a.price) : "", bookingUrl: a.bookingUrl ?? "" }}
+                      submitLabel="Save changes"
+                      onSubmit={async (payload) => {
+                        const res = await fetch(`/api/admin/activities/${a.id}`, {
+                          method: "PATCH",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify(payload),
+                        });
+                        const body = await res.json();
+                        if (res.ok) {
+                          setEditingId(null);
+                          load();
+                        }
+                        return { ok: res.ok, message: body?.error?.message };
+                      }}
+                    />
+                  </ModalContent>
+                </Modal>
+                <Button size="icon" variant="ghost" aria-label={`Delete ${a.name}`} onClick={() => handleDelete(a.id, a.name)}>
+                  <Trash2 className="h-4 w-4 text-danger-500" aria-hidden="true" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

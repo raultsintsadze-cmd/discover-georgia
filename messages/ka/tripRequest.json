@@ -1,0 +1,20 @@
+{
+  "pageTitle": "მოგზაურობის მოთხოვნა",
+  "tripFallbackName": "მოგზაურობა",
+  "noPlaces": "ადგილები არ არის",
+  "notSelected": "არჩეული არ არის",
+  "routeLabel": "მარშრუტი",
+  "datesLabel": "თარიღები",
+  "passengersLabel": "მგზავრები",
+  "distanceLabel": "მანძილი",
+  "drivingTimeLabel": "სავალი დრო",
+  "estimatedPriceLabel": "სავარაუდო ფასი",
+  "driverLabel": "მძღოლი",
+  "notesLabel": "შენიშვნები",
+  "statusPending": "მოლოდინში",
+  "statusDriverAccepted": "მძღოლმა დაადასტურა",
+  "statusConfirmed": "დადასტურებულია",
+  "statusInProgress": "მიმდინარეობს",
+  "statusCompleted": "დასრულებულია",
+  "statusCancelled": "გაუქმებულია"
+}

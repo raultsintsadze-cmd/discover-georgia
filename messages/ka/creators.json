@@ -1,0 +1,17 @@
+{
+  "applyPageTitle": "გახდი კონტენტ-შემქმნელი",
+  "applySignInPrompt": "შედით სისტემაში კონტენტ-შემქმნელად განაცხადის შესატანად.",
+  "displayNameField": "საჯარო სახელი",
+  "bioField": "ბიოგრაფია",
+  "instagramField": "Instagram",
+  "tiktokField": "TikTok",
+  "handlePlaceholder": "@handle",
+  "submitError": "განაცხადის გაგზავნა ვერ მოხერხდა.",
+  "genericError": "დაფიქსირდა შეცდომა. გთხოვთ, სცადოთ ხელახლა.",
+  "successToastTitle": "განაცხადი გაგზავნილია",
+  "successToastDescription": "მალე განვიხილავთ.",
+  "submitButton": "განაცხადის გაგზავნა",
+  "profilePageTitle": "კონტენტ-შემქმნელი",
+  "videosLabel": "ვიდეოები",
+  "placesLabel": "ადგილები"
+}

@@ -1,0 +1,20 @@
+{
+  "toast": {
+    "signInRequiredTitle": "Sign in required",
+    "signInToSave": "Sign in to save places.",
+    "signInToAddToTrip": "Sign in to build a trip.",
+    "linkCopied": "Link copied"
+  },
+  "video": {
+    "unmute": "Unmute video",
+    "mute": "Mute video"
+  },
+  "rail": {
+    "saved": "Saved",
+    "save": "Save",
+    "trip": "Trip",
+    "go": "Go",
+    "share": "Share"
+  },
+  "viewPlace": "View place"
+}

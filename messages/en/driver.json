@@ -1,0 +1,14 @@
+{
+  "pageTitle": "Trip requests",
+  "emptyTitle": "No trip requests yet",
+  "emptyDescription": "New requests assigned to you will show up here.",
+  "updateErrorToastTitle": "Couldn't update this request",
+  "acceptedToast": "Accepted",
+  "declinedToast": "Declined",
+  "tripIdLabel": "Trip #{id}",
+  "passengersCount": "{count, plural, =1 {# passenger} other {# passengers}}",
+  "priceLabel": "{amount} GEL",
+  "viewDetails": "View details",
+  "decline": "Decline",
+  "accept": "Accept"
+}

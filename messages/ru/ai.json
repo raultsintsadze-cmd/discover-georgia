@@ -1,0 +1,18 @@
+{
+  "pageTitle": "Спросить ИИ",
+  "chipOptimizeRoute": "Оптимизировать маршрут",
+  "chipOptimizeBudget": "Оптимизировать бюджет",
+  "chipOptimizeComfort": "Оптимизировать комфорт",
+  "chipMoreNature": "Больше природы",
+  "chipMoreCulture": "Больше культуры",
+  "chipMaxDestinations": "Максимум направлений",
+  "respondErrorToastTitle": "ИИ не смог ответить",
+  "respondErrorToastDescription": "Попробуйте ещё раз.",
+  "startError": "Не удалось начать разговор. Попробуйте ещё раз.",
+  "greeting": "Попросите меня добавить места, изменить даты, проверить время в пути или рассчитать стоимость — я буду использовать реальные данные для всего, о чём вы попросите.",
+  "tripUpdated": "✓ Поездка обновлена",
+  "usedLabel": "Использовано: {tools}",
+  "inputPlaceholder": "Спросите о своей поездке...",
+  "sendLabel": "Отправить",
+  "thinkingLabel": "Думаю"
+}

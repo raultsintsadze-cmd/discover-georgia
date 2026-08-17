@@ -1,0 +1,20 @@
+{
+  "pageTitle": "Trip request",
+  "tripFallbackName": "Trip",
+  "noPlaces": "No places",
+  "notSelected": "Not selected",
+  "routeLabel": "Route",
+  "datesLabel": "Dates",
+  "passengersLabel": "Passengers",
+  "distanceLabel": "Distance",
+  "drivingTimeLabel": "Driving time",
+  "estimatedPriceLabel": "ESTIMATED PRICE",
+  "driverLabel": "Driver",
+  "notesLabel": "Notes",
+  "statusPending": "Pending",
+  "statusDriverAccepted": "Driver accepted",
+  "statusConfirmed": "Confirmed",
+  "statusInProgress": "In progress",
+  "statusCompleted": "Completed",
+  "statusCancelled": "Cancelled"
+}

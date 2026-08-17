@@ -1,0 +1,20 @@
+import { getTranslations } from "next-intl/server";
+import { prisma } from "@/lib/db/client";
+import { videoService } from "@/lib/services/impl/VideoService";
+import { jsonOk, jsonError } from "@/lib/api/response";
+
+export async function GET(_request: Request, { params }: { params: Promise<{ slug: string }> }) {
+  const t = await getTranslations("apiErrors");
+  const { slug } = await params;
+  const place = await prisma.place.findUnique({ where: { slug }, select: { id: true } });
+  if (!place) {
+    return jsonError("NOT_FOUND", t("placeNotFoundForSlug", { slug }), 404);
+  }
+
+  const [featured, all] = await Promise.all([
+    videoService.getFeaturedForPlace(place.id),
+    videoService.listForPlace(place.id),
+  ]);
+
+  return jsonOk({ featured, additional: all.filter((v) => v.id !== featured?.id) });
+}

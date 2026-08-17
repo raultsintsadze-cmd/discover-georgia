@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "backToMap": "Назад к карте"
+  },
+  "quickInfo": {
+    "recommendedTime": "Рекомендуемое время",
+    "notSpecified": "Не указано",
+    "bestSeason": "Лучший сезон",
+    "yearRound": "Круглый год",
+    "difficulty": "Сложность",
+    "easy": "Лёгкий",
+    "entranceFee": "Стоимость входа",
+    "free": "Бесплатно",
+    "parking": "Парковка",
+    "available": "Есть",
+    "notAvailable": "Нет",
+    "familyFriendly": "Подходит для семей",
+    "yes": "Да",
+    "notIdealForKids": "Не идеально для детей"
+  },
+  "map": {
+    "title": "Карта",
+    "gpsLabel": "GPS: {coordinate}"
+  },
+  "nearbyPlaces": {
+    "title": "Места поблизости"
+  },
+  "nearbyHotels": {
+    "title": "Где остановиться рядом",
+    "defaultCategory": "Отель",
+    "notRated": "Без рейтинга",
+    "priceUnavailable": "Цена сейчас недоступна",
+    "pricePerNight": "~{price} GEL / ночь",
+    "book": "Забронировать"
+  },
+  "nearbyRestaurants": {
+    "title": "Где поесть рядом",
+    "defaultCuisine": "Ресторан",
+    "notRated": "Без рейтинга",
+    "priceUnavailable": "Цена сейчас недоступна",
+    "book": "Забронировать"
+  },
+  "nearbyActivities": {
+    "title": "Чем заняться рядом",
+    "categories": {
+      "TOUR": "Тур",
+      "WINE_TASTING": "Дегустация вина",
+      "ADVENTURE": "Приключения",
+      "CULTURE": "Культура",
+      "GENERAL": "Активность"
+    },
+    "notRated": "Без рейтинга",
+    "priceUnavailable": "Цена сейчас недоступна",
+    "price": "~{price} GEL",
+    "book": "Забронировать"
+  },
+  "actionRow": {
+    "saved": "Сохранено",
+    "save": "Сохранить",
+    "addToTrip": "В поездку",
+    "navigate": "Маршрут",
+    "share": "Поделиться"
+  },
+  "toast": {
+    "signInRequiredTitle": "Требуется вход",
+    "signInToSave": "Войдите, чтобы сохранять места.",
+    "signInToAddToTrip": "Войдите, чтобы спланировать поездку.",
+    "linkCopied": "Ссылка скопирована"
+  },
+  "picker": {
+    "change": "Изменить",
+    "searchPlaceholder": "Найти место..."
+  },
+  "cardList": {
+    "emptyTitle": "Здесь пока нет мест",
+    "emptyDescription": "Загляните позже — новые направления добавляются регулярно."
+  },
+  "savedList": {
+    "emptyTitle": "Пока ничего не сохранено",
+    "emptyDescription": "Нажмите на значок сохранения на любом месте или видео, чтобы добавить его сюда.",
+    "all": "Все",
+    "unsave": "Убрать {name} из сохранённого"
+  },
+  "loading": "Загрузка места"
+}

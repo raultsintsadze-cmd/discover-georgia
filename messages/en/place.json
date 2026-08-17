@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "backToMap": "Back to map"
+  },
+  "quickInfo": {
+    "recommendedTime": "Recommended time",
+    "notSpecified": "Not specified",
+    "bestSeason": "Best season",
+    "yearRound": "Year-round",
+    "difficulty": "Difficulty",
+    "easy": "Easy",
+    "entranceFee": "Entrance fee",
+    "free": "Free",
+    "parking": "Parking",
+    "available": "Available",
+    "notAvailable": "Not available",
+    "familyFriendly": "Family friendly",
+    "yes": "Yes",
+    "notIdealForKids": "Not ideal for kids"
+  },
+  "map": {
+    "title": "Map",
+    "gpsLabel": "GPS: {coordinate}"
+  },
+  "nearbyPlaces": {
+    "title": "Nearby places"
+  },
+  "nearbyHotels": {
+    "title": "Stay nearby",
+    "defaultCategory": "Hotel",
+    "notRated": "Not rated",
+    "priceUnavailable": "Price not currently available",
+    "pricePerNight": "~{price} GEL / night",
+    "book": "Book"
+  },
+  "nearbyRestaurants": {
+    "title": "Eat nearby",
+    "defaultCuisine": "Restaurant",
+    "notRated": "Not rated",
+    "priceUnavailable": "Price not currently available",
+    "book": "Book"
+  },
+  "nearbyActivities": {
+    "title": "Things to do nearby",
+    "categories": {
+      "TOUR": "Tour",
+      "WINE_TASTING": "Wine tasting",
+      "ADVENTURE": "Adventure",
+      "CULTURE": "Culture",
+      "GENERAL": "Activity"
+    },
+    "notRated": "Not rated",
+    "priceUnavailable": "Price not currently available",
+    "price": "~{price} GEL",
+    "book": "Book"
+  },
+  "actionRow": {
+    "saved": "Saved",
+    "save": "Save",
+    "addToTrip": "Add to Trip",
+    "navigate": "Navigate",
+    "share": "Share"
+  },
+  "toast": {
+    "signInRequiredTitle": "Sign in required",
+    "signInToSave": "Sign in to save places.",
+    "signInToAddToTrip": "Sign in to build a trip.",
+    "linkCopied": "Link copied"
+  },
+  "picker": {
+    "change": "Change",
+    "searchPlaceholder": "Search for a place..."
+  },
+  "cardList": {
+    "emptyTitle": "No places here yet",
+    "emptyDescription": "Check back soon — new destinations are added regularly."
+  },
+  "savedList": {
+    "emptyTitle": "Nothing saved yet",
+    "emptyDescription": "Tap the save icon on any place or video to add it here.",
+    "all": "All",
+    "unsave": "Unsave {name}"
+  },
+  "loading": "Loading place"
+}

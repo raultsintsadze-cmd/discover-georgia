@@ -1,0 +1,698 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  CREATOR
+  DRIVER
+  ADMIN
+}
+
+enum ModerationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PlaceStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum Difficulty {
+  EASY
+  MODERATE
+  HARD
+}
+
+enum VideoStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PUBLISHED
+}
+
+enum TripStatus {
+  DRAFT
+  PLANNED
+  REQUESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum DriverVerificationStatus {
+  PENDING
+  VERIFIED
+  SUSPENDED
+}
+
+enum DriverAvailabilityStatus {
+  AVAILABLE
+  UNAVAILABLE
+}
+
+enum TripRequestStatus {
+  PENDING
+  DRIVER_ACCEPTED
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum NotificationChannel {
+  TELEGRAM
+  EMAIL
+  PUSH
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+enum ActivityCategory {
+  TOUR
+  WINE_TASTING
+  ADVENTURE
+  CULTURE
+  GENERAL
+}
+
+enum AiMessageRole {
+  USER
+  ASSISTANT
+  TOOL
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Auth (Auth.js / NextAuth adapter tables) + Users
+// ─────────────────────────────────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  email         String?  @unique
+  emailVerified DateTime?
+  phone         String?  @unique
+  name          String?
+  image         String?
+  /// Only set for Credentials-provider accounts. OAuth-only users (once
+  /// added) have no password at all — never required, never faked.
+  passwordHash  String?
+  locale        String   @default("en")
+  role          Role     @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+
+  profile          Profile?
+  creator          Creator?          @relation("CreatorUser")
+  reviewedCreators Creator[]         @relation("CreatorReviewer")
+  driver           Driver?           @relation("DriverUser")
+  reviewedDrivers  Driver[]          @relation("DriverReviewer")
+  savedPlaces      SavedPlace[]
+  trips            Trip[]
+  videoSubmissions VideoSubmission[] @relation("SubmissionSubmitter")
+  tripRequests     TripRequest[]
+  notifications    Notification[]
+  aiConversations  AiConversation[]
+  reviewedSubmissions VideoSubmission[] @relation("SubmissionReviewer")
+
+  @@index([role])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Extended, non-auth profile data. Kept separate from User so auth stays lean.
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  bio         String?
+  preferences Json? // travel-pace, interests, dietary, accessibility, etc.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Creators
+// ─────────────────────────────────────────────────────────────────────────
+
+model Creator {
+  id                String           @id @default(cuid())
+  userId            String           @unique
+  displayName       String
+  photoUrl          String?
+  bio               String?
+  instagram         String?
+  tiktok            String?
+  status            ModerationStatus @default(PENDING)
+  reviewedByAdminId String?
+  reviewNotes       String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  user            User    @relation("CreatorUser", fields: [userId], references: [id], onDelete: Cascade)
+  reviewedByAdmin User?   @relation("CreatorReviewer", fields: [reviewedByAdminId], references: [id])
+  videos          Video[]
+
+  @@index([status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Taxonomy: Regions, Categories
+// ─────────────────────────────────────────────────────────────────────────
+
+model Region {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  // Translated content (spec §43) — nullable, unpopulated until a
+  // dedicated content-translation pass. Falls back to the English
+  // name/description above when null. See docs/architecture.md
+  // "Internationalization".
+  nameKa        String?
+  nameRu        String?
+  descriptionKa String?
+  descriptionRu String?
+  createdAt   DateTime @default(now())
+
+  places  Place[]
+  hotels  Hotel[]
+  drivers DriverRegion[]
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  icon      String?
+  // Translated content (spec §43) — nullable, unpopulated until a
+  // dedicated content-translation pass. Falls back to `name` when null.
+  nameKa    String?
+  nameRu    String?
+  createdAt DateTime @default(now())
+
+  places Place[]
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Places
+// ─────────────────────────────────────────────────────────────────────────
+
+model Place {
+  id                  String      @id @default(cuid())
+  name                String
+  slug                String      @unique
+  shortDescription    String
+  description         String      @db.Text
+  regionId            String
+  categoryId          String
+  latitude            Float
+  longitude           Float
+  // Maintained via DB trigger from latitude/longitude for PostGIS spatial
+  // queries (ST_DWithin, ST_Distance, nearest-neighbor via GiST index).
+  // See docs/database.md ("Geospatial strategy").
+  location            Unsupported("geography(Point, 4326)")?
+  bestSeason          String?
+  recommendedDuration Int? // minutes
+  difficulty          Difficulty?
+  entranceFee         String? // free-form: "Free", "5 GEL", "Varies"
+  parking             Boolean     @default(false)
+  familyFriendly      Boolean     @default(false)
+  tags                String[]
+  // Translated content (spec §43) — nullable, unpopulated until a
+  // dedicated content-translation pass. Falls back to the English
+  // name/shortDescription/description above when null. See
+  // docs/architecture.md "Internationalization".
+  nameKa              String?
+  nameRu              String?
+  shortDescriptionKa  String?
+  shortDescriptionRu  String?
+  descriptionKa       String?     @db.Text
+  descriptionRu       String?     @db.Text
+  status              PlaceStatus @default(DRAFT)
+  featuredVideoId     String?     @unique
+  viewCount           Int         @default(0)
+  saveCount           Int         @default(0)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  region        Region       @relation(fields: [regionId], references: [id])
+  category      Category     @relation(fields: [categoryId], references: [id])
+  featuredVideo Video?       @relation("FeaturedVideo", fields: [featuredVideoId], references: [id])
+  videos        Video[]      @relation("PlaceVideos")
+  savedBy       SavedPlace[]
+  tripPlaces    TripPlace[]
+  hotelsNearby  Hotel[]
+  activities    Activity[]
+  restaurants   Restaurant[]
+
+  @@index([regionId])
+  @@index([categoryId])
+  @@index([status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Video + submissions
+// ─────────────────────────────────────────────────────────────────────────
+
+model Video {
+  id               String      @id @default(cuid())
+  placeId          String
+  creatorId        String?
+  url              String
+  posterUrl        String?
+  durationSeconds  Int?
+  status           VideoStatus @default(PENDING)
+  sourceSubmissionId String?   @unique
+  viewCount        Int         @default(0)
+  completionCount  Int         @default(0)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  place             Place            @relation("PlaceVideos", fields: [placeId], references: [id], onDelete: Cascade)
+  featuredForPlace  Place?           @relation("FeaturedVideo")
+  creator           Creator?         @relation(fields: [creatorId], references: [id])
+  sourceSubmission  VideoSubmission? @relation(fields: [sourceSubmissionId], references: [id])
+
+  @@index([placeId])
+  @@index([status])
+}
+
+// Raw user submissions before a Place/Video is created or attached.
+// Never auto-published — see VideoService moderation workflow.
+model VideoSubmission {
+  id               String           @id @default(cuid())
+  submittedByUserId String
+  placeName        String
+  existingPlaceId  String?
+  videoUrl         String
+  description      String?
+  latitude         Float?
+  longitude        Float?
+  categoryId       String?
+  regionId         String?
+  creatorName      String
+  instagram        String?
+  tiktok           String?
+  contactEmail     String
+  ownershipConfirmed Boolean        @default(false)
+  status           ModerationStatus @default(PENDING)
+  reviewedByAdminId String?
+  reviewNotes      String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  submittedBy   User   @relation("SubmissionSubmitter", fields: [submittedByUserId], references: [id])
+  reviewedByAdmin User? @relation("SubmissionReviewer", fields: [reviewedByAdminId], references: [id])
+  resultingVideo Video?
+
+  @@index([status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Saved places
+// ─────────────────────────────────────────────────────────────────────────
+
+model SavedPlace {
+  id        String   @id @default(cuid())
+  userId    String
+  placeId   String
+  createdAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, placeId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Trips
+// ─────────────────────────────────────────────────────────────────────────
+
+model Trip {
+  id            String     @id @default(cuid())
+  userId        String
+  name          String
+  startDate     DateTime?
+  endDate       DateTime?
+  travelers     Int        @default(1)
+  budget        Decimal?   @db.Decimal(10, 2)
+  preferences   Json? // interests, pace, children, hotelPreference, driverPreference
+  startLocation String?
+  endLocation   String?
+  status        TripStatus @default(DRAFT)
+  tripScore     Decimal?   @db.Decimal(3, 1) // AI recommendation, not a fact — see ai-architecture.md
+  // The user's in-progress driver choice while planning — distinct from
+  // TripRequest.driverId, which freezes the driver for a confirmed booking
+  // (Phase 10). Nulled out if the driver is suspended, not deleted.
+  preferredDriverId String?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  preferredDriver Driver?    @relation(fields: [preferredDriverId], references: [id], onDelete: SetNull)
+  days         TripDay[]
+  routes       Route[]
+  tripRequests TripRequest[]
+  aiConversations AiConversation[]
+
+  @@index([userId])
+  @@index([status])
+}
+
+model TripDay {
+  id              String   @id @default(cuid())
+  tripId          String
+  dayNumber       Int
+  date            DateTime?
+  overnightHotelId String?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  trip           Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  overnightHotel Hotel?      @relation(fields: [overnightHotelId], references: [id])
+  places         TripPlace[]
+
+  @@unique([tripId, dayNumber])
+}
+
+model TripPlace {
+  id                    String   @id @default(cuid())
+  tripDayId             String
+  placeId               String
+  orderIndex            Int
+  plannedDurationMinutes Int?
+  activityNotes         String?
+  createdAt             DateTime @default(now())
+
+  tripDay TripDay @relation(fields: [tripDayId], references: [id], onDelete: Cascade)
+  place   Place   @relation(fields: [placeId], references: [id])
+
+  @@unique([tripDayId, placeId])
+  @@index([tripDayId])
+}
+
+// One row per routed segment (origin -> destination), produced exclusively
+// by RouteService via a real routing provider. Never written by the AI.
+model Route {
+  id               String   @id @default(cuid())
+  tripId           String
+  originPlaceId    String
+  destinationPlaceId String
+  orderIndex       Int
+  distanceMeters   Int
+  durationSeconds  Int
+  geometry         Json // GeoJSON LineString
+  provider         String // e.g. "mapbox-directions"
+  createdAt        DateTime @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Hotels / Restaurants / Activities
+// ─────────────────────────────────────────────────────────────────────────
+
+model Hotel {
+  id           String   @id @default(cuid())
+  name         String
+  regionId     String
+  nearPlaceId  String?
+  latitude     Float
+  longitude    Float
+  description  String?
+  rating       Decimal? @db.Decimal(2, 1)
+  price        Decimal? @db.Decimal(10, 2)
+  category     String?
+  bookingUrl   String?
+  affiliatePartner String?
+  commission   Decimal? @db.Decimal(5, 2) // percent
+  featured     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  region     Region    @relation(fields: [regionId], references: [id])
+  nearPlace  Place?    @relation(fields: [nearPlaceId], references: [id])
+  tripDays   TripDay[]
+
+  @@index([regionId])
+}
+
+model Restaurant {
+  id           String   @id @default(cuid())
+  name         String
+  nearPlaceId  String?
+  latitude     Float
+  longitude    Float
+  description  String?
+  rating       Decimal? @db.Decimal(2, 1)
+  priceLevel   Int? // 1-4
+  cuisine      String?
+  bookingUrl   String?
+  affiliatePartner String?
+  commission   Decimal? @db.Decimal(5, 2)
+  featured     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  nearPlace Place? @relation(fields: [nearPlaceId], references: [id])
+
+  @@index([nearPlaceId])
+}
+
+model Activity {
+  id           String           @id @default(cuid())
+  name         String
+  nearPlaceId  String?
+  category     ActivityCategory @default(GENERAL)
+  latitude     Float
+  longitude    Float
+  description  String?
+  price        Decimal?         @db.Decimal(10, 2)
+  rating       Decimal?         @db.Decimal(2, 1)
+  bookingUrl   String?
+  affiliatePartner String?
+  commission   Decimal?         @db.Decimal(5, 2)
+  featured     Boolean          @default(false)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  nearPlace Place? @relation(fields: [nearPlaceId], references: [id])
+
+  @@index([nearPlaceId])
+  @@index([category])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Drivers + pricing
+// ─────────────────────────────────────────────────────────────────────────
+
+model Driver {
+  id                  String                    @id @default(cuid())
+  userId              String?                   @unique
+  name                String
+  photoUrl            String?
+  phone               String
+  telegramId          String?
+  languages           String[]
+  vehicle             String?
+  vehicleType         String?
+  seats               Int?
+  pricePerKm          Decimal?                  @db.Decimal(10, 2)
+  dailyRate           Decimal?                  @db.Decimal(10, 2)
+  minimumTripPrice    Decimal?                  @db.Decimal(10, 2)
+  rating              Decimal?                  @db.Decimal(2, 1)
+  tripsCompleted      Int                       @default(0)
+  verificationStatus  DriverVerificationStatus  @default(PENDING)
+  availabilityStatus  DriverAvailabilityStatus  @default(UNAVAILABLE)
+  reviewedByAdminId   String?
+  reviewNotes         String?
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime                  @updatedAt
+
+  user            User?          @relation("DriverUser", fields: [userId], references: [id])
+  reviewedByAdmin User?          @relation("DriverReviewer", fields: [reviewedByAdminId], references: [id])
+  regions         DriverRegion[]
+  preferredByTrips Trip[]
+  tripRequests    TripRequest[]
+
+  @@index([verificationStatus, availabilityStatus])
+}
+
+model DriverRegion {
+  driverId String
+  regionId String
+
+  driver Driver @relation(fields: [driverId], references: [id], onDelete: Cascade)
+  region Region @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@id([driverId, regionId])
+}
+
+// Versioned pricing configuration. PricingService always reads the single
+// active rule; history is preserved for auditability of past estimates.
+model PricingRule {
+  id                String   @id @default(cuid())
+  name              String
+  pricePerKm        Decimal  @db.Decimal(10, 2)
+  dailyDriverRate   Decimal  @db.Decimal(10, 2)
+  minimumTripPrice  Decimal  @db.Decimal(10, 2)
+  fuelRate          Decimal  @db.Decimal(10, 2)
+  additionalFees    Json? // [{ label, amount }]
+  isActive          Boolean  @default(false)
+  effectiveFrom     DateTime @default(now())
+  createdAt         DateTime @default(now())
+
+  @@index([isActive])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Trip requests (driver booking flow)
+// ─────────────────────────────────────────────────────────────────────────
+
+model TripRequest {
+  id               String            @id @default(cuid())
+  tripId           String
+  userId           String
+  driverId         String?
+  itinerarySnapshot Json // frozen copy of days/places/routes at request time
+  distanceMeters   Int
+  durationSeconds  Int
+  estimatedPrice   Decimal           @db.Decimal(10, 2)
+  passengers       Int
+  startDate        DateTime?
+  endDate          DateTime?
+  notes            String?
+  status           TripRequestStatus @default(PENDING)
+  // Dedupes a retried POST /api/trip-requests (e.g. a flaky mobile
+  // connection double-firing "Request this trip") — see docs/api.md
+  // §1 Idempotency. Null for any request created before this existed.
+  idempotencyKey   String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  trip   Trip    @relation(fields: [tripId], references: [id])
+  user   User    @relation(fields: [userId], references: [id])
+  driver Driver? @relation(fields: [driverId], references: [id])
+
+  notifications Notification[]
+
+  @@unique([userId, idempotencyKey])
+  @@index([status])
+  @@index([driverId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Notifications (Telegram today; email/push abstracted for later)
+// ─────────────────────────────────────────────────────────────────────────
+
+model Notification {
+  id            String              @id @default(cuid())
+  userId        String?
+  tripRequestId String?
+  channel       NotificationChannel
+  type          String // e.g. "trip_request.created"
+  payload       Json
+  status        NotificationStatus  @default(PENDING)
+  sentAt        DateTime?
+  error         String?
+  createdAt     DateTime            @default(now())
+
+  user        User?        @relation(fields: [userId], references: [id])
+  tripRequest TripRequest? @relation(fields: [tripRequestId], references: [id])
+
+  @@index([status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// AI conversations (full tool-call audit trail — see ai-architecture.md)
+// ─────────────────────────────────────────────────────────────────────────
+
+model AiConversation {
+  id        String   @id @default(cuid())
+  userId    String
+  tripId    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trip     Trip?       @relation(fields: [tripId], references: [id])
+  messages AiMessage[]
+
+  @@index([userId])
+  @@index([tripId])
+}
+
+model AiMessage {
+  id             String        @id @default(cuid())
+  conversationId String
+  role           AiMessageRole
+  content        String?       @db.Text
+  toolName       String?
+  toolInput      Json?
+  toolOutput     Json?
+  createdAt      DateTime      @default(now())
+
+  conversation AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}

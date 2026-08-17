@@ -1,0 +1,85 @@
+{
+  "hero": {
+    "backToMap": "რუკაზე დაბრუნება"
+  },
+  "quickInfo": {
+    "recommendedTime": "სავარაუდო ხანგრძლივობა",
+    "notSpecified": "მითითებული არ არის",
+    "bestSeason": "საუკეთესო სეზონი",
+    "yearRound": "მთელი წლის განმავლობაში",
+    "difficulty": "სირთულე",
+    "easy": "მარტივი",
+    "entranceFee": "შესვლის საფასური",
+    "free": "უფასო",
+    "parking": "პარკინგი",
+    "available": "ხელმისაწვდომია",
+    "notAvailable": "ხელმისაწვდომი არ არის",
+    "familyFriendly": "ოჯახისთვის მოსახერხებელი",
+    "yes": "დიახ",
+    "notIdealForKids": "ბავშვებისთვის არც ისე შესაფერისი"
+  },
+  "map": {
+    "title": "რუკა",
+    "gpsLabel": "GPS: {coordinate}"
+  },
+  "nearbyPlaces": {
+    "title": "ახლომდებარე ადგილები"
+  },
+  "nearbyHotels": {
+    "title": "დარჩი ახლოს",
+    "defaultCategory": "სასტუმრო",
+    "notRated": "შეფასებული არ არის",
+    "priceUnavailable": "ფასი ამჟამად ხელმისაწვდომი არ არის",
+    "pricePerNight": "~{price} ლარი / ღამე",
+    "book": "დაჯავშნა"
+  },
+  "nearbyRestaurants": {
+    "title": "ჭამე ახლოს",
+    "defaultCuisine": "რესტორანი",
+    "notRated": "შეფასებული არ არის",
+    "priceUnavailable": "ფასი ამჟამად ხელმისაწვდომი არ არის",
+    "book": "დაჯავშნა"
+  },
+  "nearbyActivities": {
+    "title": "საქმიანობა ახლოს",
+    "categories": {
+      "TOUR": "ტური",
+      "WINE_TASTING": "ღვინის დეგუსტაცია",
+      "ADVENTURE": "სათავგადასავლო",
+      "CULTURE": "კულტურა",
+      "GENERAL": "აქტივობა"
+    },
+    "notRated": "შეფასებული არ არის",
+    "priceUnavailable": "ფასი ამჟამად ხელმისაწვდომი არ არის",
+    "price": "~{price} ლარი",
+    "book": "დაჯავშნა"
+  },
+  "actionRow": {
+    "saved": "შენახულია",
+    "save": "შენახვა",
+    "addToTrip": "მოგზაურობაში დამატება",
+    "navigate": "მიმართულება",
+    "share": "გაზიარება"
+  },
+  "toast": {
+    "signInRequiredTitle": "საჭიროა შესვლა",
+    "signInToSave": "შედით სისტემაში ადგილების შესანახად.",
+    "signInToAddToTrip": "შედით სისტემაში მოგზაურობის დასაგეგმად.",
+    "linkCopied": "ბმული დაკოპირებულია"
+  },
+  "picker": {
+    "change": "შეცვლა",
+    "searchPlaceholder": "მოძებნე ადგილი..."
+  },
+  "cardList": {
+    "emptyTitle": "აქ ჯერ ადგილები არ არის",
+    "emptyDescription": "შეამოწმეთ მალე — ახალი მიმართულებები რეგულარულად ემატება."
+  },
+  "savedList": {
+    "emptyTitle": "ჯერ არაფერია შენახული",
+    "emptyDescription": "დააჭირეთ შენახვის ხატულას ნებისმიერ ადგილზე ან ვიდეოზე, რომ ის აქ დაემატოს.",
+    "all": "ყველა",
+    "unsave": "{name}-ის ამორთვა შენახულებიდან"
+  },
+  "loading": "ადგილი იტვირთება"
+}

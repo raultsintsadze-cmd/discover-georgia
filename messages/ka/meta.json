@@ -1,0 +1,9 @@
+{
+  "defaultTitle": "Discover Georgia",
+  "titleTemplate": "%s · Discover Georgia",
+  "defaultDescription": "გაიცანი საქართველო. ააშენე შენი მოგზაურობა.",
+  "regionTitleSuffix": "მიმართულებები საქართველოში",
+  "regionFallbackDescription": "ნამდვილი ადგილები მოსანახულებლად რეგიონში {region}, საქართველო.",
+  "categoryTitleSuffix": "რა გავაკეთოთ საქართველოში",
+  "categoryFallbackDescription": "ნამდვილი {category} მიმართულებები საქართველოს მასშტაბით."
+}

@@ -1,0 +1,117 @@
+{
+  "title": "My Trip",
+  "subtitle": "Your itinerary, distances, and cost in one place",
+  "signInPrompt": "Sign in to plan your trip.",
+  "form": {
+    "createTitle": "Plan a new trip",
+    "editTitle": "Edit trip",
+    "nameLabel": "Trip name",
+    "startDateLabel": "Start date",
+    "endDateLabel": "End date",
+    "travelersLabel": "Travelers",
+    "budgetLabel": "Budget (GEL)",
+    "budgetHelper": "Optional",
+    "saveError": "Couldn't save the trip.",
+    "genericError": "Something went wrong. Please try again.",
+    "deleteConfirm": "Delete \"{name}\"? This can't be undone.",
+    "deleteErrorTitle": "Couldn't delete trip",
+    "createButton": "Create trip",
+    "saveButton": "Save changes",
+    "deleteButton": "Delete trip"
+  },
+  "addToTrip": {
+    "sheetTitle": "Add to trip",
+    "dayLabel": "Day {dayNumber}",
+    "dayLabelWithDate": "Day {dayNumber} · {date}",
+    "noTripYet": "You don't have a trip yet.",
+    "createTripButton": "Create a trip",
+    "addErrorTitle": "Couldn't add place",
+    "addedToast": "Added to {tripName}",
+    "placesCount": "{count, plural, one {# place} other {# places}}"
+  },
+  "addPlaceToDay": {
+    "sheetTitle": "Add a place to Day {dayNumber}",
+    "addErrorTitle": "Couldn't add place",
+    "addButton": "Add to day"
+  },
+  "noTripState": {
+    "title": "No trip yet",
+    "description": "Plan your Georgia itinerary — add places, set dates, and see them on the map.",
+    "startButton": "Start planning"
+  },
+  "itinerary": {
+    "updateErrorTitle": "Couldn't update trip",
+    "dayLabel": "Day {dayNumber}",
+    "noPlaces": "No places yet.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "remove": "Remove {name}",
+    "addPlaceButton": "Add place"
+  },
+  "map": {
+    "emptyState": "Add places to your trip to see them on the map."
+  },
+  "route": {
+    "checkingRoute": "Checking route…",
+    "notCalculated": "Route not calculated yet",
+    "recalculateButton": "Recalculate",
+    "calculateButton": "Calculate route",
+    "calculateErrorTitle": "Couldn't calculate route"
+  },
+  "driverSelector": {
+    "noDrivers": "No drivers available yet.",
+    "calculatePrompt": "Calculate a route (Map tab) to see per-driver prices.",
+    "selectErrorTitle": "Couldn't select driver",
+    "selectedToast": "Driver selected",
+    "tripsCount": "{count} trips",
+    "selectButton": "Select",
+    "selectedButton": "Selected"
+  },
+  "scoreCard": {
+    "title": "Trip score",
+    "routeEfficiency": "Route efficiency",
+    "drivingComfort": "Driving comfort",
+    "budgetFit": "Budget fit",
+    "preferenceMatch": "Preference match",
+    "disclaimer": "Our recommendation, not a guarantee — a mix of real trip data and AI judgment.",
+    "calculateButton": "Calculate trip score",
+    "loadingLabel": "Scoring your trip",
+    "error": "Couldn't calculate a trip score.",
+    "recalculateButton": "Recalculate"
+  },
+  "requestPanel": {
+    "invalidPassengers": "Enter a valid number of passengers",
+    "requestErrorTitle": "Couldn't request this trip",
+    "requestErrorGeneric": "Please try again.",
+    "successTitle": "Trip requested",
+    "successDescription": "We'll notify you once a driver responds.",
+    "requestedTitle": "Trip requested",
+    "statusLabel": "Status:",
+    "viewRequestLink": "View request",
+    "helperText": "Sends your itinerary, dates, and estimated price to a driver and to Discover Georgia.",
+    "noRouteWarning": "Calculate a route (Map tab) before requesting this trip.",
+    "passengersLabel": "Passengers",
+    "notesLabel": "Notes",
+    "notesHelper": "Optional — anything the driver should know.",
+    "requestButton": "Request this trip"
+  },
+  "budget": {
+    "budgetLabel": "Budget",
+    "budgetNotSet": "Not set",
+    "totalDistanceLabel": "Total distance",
+    "totalDrivingTimeLabel": "Total driving time",
+    "estimatedPriceLabel": "ESTIMATED PRICE",
+    "routeUnavailable": "Route distance, driving time, and estimated price aren't available yet — calculate a route from the Map tab.",
+    "driversHeading": "Drivers"
+  },
+  "view": {
+    "deletedMessage": "Trip deleted.",
+    "editAriaLabel": "Edit trip",
+    "askAiButton": "Ask AI to help plan",
+    "tabListAriaLabel": "Trip view",
+    "tabItinerary": "Itinerary",
+    "tabMap": "Map",
+    "tabBudget": "Budget",
+    "travelerCount": "{count, plural, one {# traveler} other {# travelers}}"
+  }
+}

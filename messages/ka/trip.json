@@ -1,0 +1,117 @@
+{
+  "title": "ჩემი მოგზაურობა",
+  "subtitle": "თქვენი მარშრუტი, მანძილები და ღირებულება ერთ ადგილას",
+  "signInPrompt": "შედით სისტემაში მოგზაურობის დასაგეგმად.",
+  "form": {
+    "createTitle": "დაგეგმე ახალი მოგზაურობა",
+    "editTitle": "მოგზაურობის რედაქტირება",
+    "nameLabel": "მოგზაურობის სახელი",
+    "startDateLabel": "დაწყების თარიღი",
+    "endDateLabel": "დასრულების თარიღი",
+    "travelersLabel": "მოგზაურთა რაოდენობა",
+    "budgetLabel": "ბიუჯეტი (ლარი)",
+    "budgetHelper": "არასავალდებულო",
+    "saveError": "მოგზაურობის შენახვა ვერ მოხერხდა.",
+    "genericError": "დაფიქსირდა შეცდომა. გთხოვთ, სცადოთ ხელახლა.",
+    "deleteConfirm": "წავშალო „{name}“? ამ ქმედების გაუქმება შეუძლებელია.",
+    "deleteErrorTitle": "მოგზაურობის წაშლა ვერ მოხერხდა",
+    "createButton": "მოგზაურობის შექმნა",
+    "saveButton": "ცვლილებების შენახვა",
+    "deleteButton": "მოგზაურობის წაშლა"
+  },
+  "addToTrip": {
+    "sheetTitle": "დაამატე მოგზაურობას",
+    "dayLabel": "დღე {dayNumber}",
+    "dayLabelWithDate": "დღე {dayNumber} · {date}",
+    "noTripYet": "თქვენ ჯერ არ გაქვთ მოგზაურობა.",
+    "createTripButton": "მოგზაურობის შექმნა",
+    "addErrorTitle": "ადგილის დამატება ვერ მოხერხდა",
+    "addedToast": "დაემატა მოგზაურობას „{tripName}“",
+    "placesCount": "{count, plural, other {# ადგილი}}"
+  },
+  "addPlaceToDay": {
+    "sheetTitle": "დაამატე ადგილი დღეს {dayNumber}",
+    "addErrorTitle": "ადგილის დამატება ვერ მოხერხდა",
+    "addButton": "დღეში დამატება"
+  },
+  "noTripState": {
+    "title": "მოგზაურობა ჯერ არ არის",
+    "description": "დაგეგმე შენი მარშრუტი საქართველოში — დაამატე ადგილები, დააყენე თარიღები და ნახე ისინი რუკაზე.",
+    "startButton": "დაწყება"
+  },
+  "itinerary": {
+    "updateErrorTitle": "მოგზაურობის განახლება ვერ მოხერხდა",
+    "dayLabel": "დღე {dayNumber}",
+    "noPlaces": "ჯერ არცერთი ადგილი არ არის.",
+    "moveUp": "აწევა",
+    "moveDown": "დაწევა",
+    "remove": "წაშალე {name}",
+    "addPlaceButton": "ადგილის დამატება"
+  },
+  "map": {
+    "emptyState": "დაამატე ადგილები მოგზაურობას, რომ ისინი რუკაზე ნახო."
+  },
+  "route": {
+    "checkingRoute": "მარშრუტის შემოწმება…",
+    "notCalculated": "მარშრუტი ჯერ არ არის გამოთვლილი",
+    "recalculateButton": "ხელახლა გამოთვლა",
+    "calculateButton": "მარშრუტის გამოთვლა",
+    "calculateErrorTitle": "მარშრუტის გამოთვლა ვერ მოხერხდა"
+  },
+  "driverSelector": {
+    "noDrivers": "მძღოლები ჯერ არ არიან ხელმისაწვდომი.",
+    "calculatePrompt": "გამოთვალე მარშრუტი (ჩანართი „რუკა“), რომ ნახო თითოეული მძღოლის ფასი.",
+    "selectErrorTitle": "მძღოლის არჩევა ვერ მოხერხდა",
+    "selectedToast": "მძღოლი არჩეულია",
+    "tripsCount": "{count} მოგზაურობა",
+    "selectButton": "არჩევა",
+    "selectedButton": "არჩეულია"
+  },
+  "scoreCard": {
+    "title": "მოგზაურობის შეფასება",
+    "routeEfficiency": "მარშრუტის ეფექტურობა",
+    "drivingComfort": "მგზავრობის კომფორტი",
+    "budgetFit": "ბიუჯეტთან შესაბამისობა",
+    "preferenceMatch": "პრეფერენციებთან შესაბამისობა",
+    "disclaimer": "ეს ჩვენი რეკომენდაციაა და არა გარანტია — რეალური მონაცემებისა და AI-ს შეფასების ნაზავი.",
+    "calculateButton": "შეფასების გამოთვლა",
+    "loadingLabel": "მოგზაურობის შეფასება მიმდინარეობს",
+    "error": "შეფასების გამოთვლა ვერ მოხერხდა.",
+    "recalculateButton": "ხელახლა გამოთვლა"
+  },
+  "requestPanel": {
+    "invalidPassengers": "შეიყვანე მგზავრთა სწორი რაოდენობა",
+    "requestErrorTitle": "მოგზაურობის მოთხოვნა ვერ მოხერხდა",
+    "requestErrorGeneric": "გთხოვთ, სცადოთ ხელახლა.",
+    "successTitle": "მოთხოვნა გაგზავნილია",
+    "successDescription": "შეგატყობინებთ, როგორც კი მძღოლი უპასუხებს.",
+    "requestedTitle": "მოთხოვნა გაგზავნილია",
+    "statusLabel": "სტატუსი:",
+    "viewRequestLink": "მოთხოვნის ნახვა",
+    "helperText": "აგზავნის თქვენს მარშრუტს, თარიღებს და სავარაუდო ფასს მძღოლთან და Discover Georgia-სთან.",
+    "noRouteWarning": "გამოთვალე მარშრუტი (ჩანართი „რუკა“) მოთხოვნის გაგზავნამდე.",
+    "passengersLabel": "მგზავრები",
+    "notesLabel": "შენიშვნები",
+    "notesHelper": "არასავალდებულო — ნებისმიერი ინფორმაცია, რაც მძღოლმა უნდა იცოდეს.",
+    "requestButton": "მოგზაურობის მოთხოვნა"
+  },
+  "budget": {
+    "budgetLabel": "ბიუჯეტი",
+    "budgetNotSet": "არ არის დაყენებული",
+    "totalDistanceLabel": "საერთო მანძილი",
+    "totalDrivingTimeLabel": "საერთო სავალი დრო",
+    "estimatedPriceLabel": "სავარაუდო ფასი",
+    "routeUnavailable": "მანძილი, სავალი დრო და სავარაუდო ფასი ჯერ ხელმისაწვდომი არ არის — გამოთვალე მარშრუტი ჩანართში „რუკა“.",
+    "driversHeading": "მძღოლები"
+  },
+  "view": {
+    "deletedMessage": "მოგზაურობა წაშლილია.",
+    "editAriaLabel": "მოგზაურობის რედაქტირება",
+    "askAiButton": "სთხოვე AI-ს დახმარება დაგეგმვაში",
+    "tabListAriaLabel": "მოგზაურობის ხედი",
+    "tabItinerary": "მარშრუტი",
+    "tabMap": "რუკა",
+    "tabBudget": "ბიუჯეტი",
+    "travelerCount": "{count, plural, other {# მოგზაური}}"
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "title": "Моя поездка",
+  "subtitle": "Ваш маршрут, расстояния и стоимость в одном месте",
+  "signInPrompt": "Войдите, чтобы спланировать поездку.",
+  "form": {
+    "createTitle": "Спланировать новую поездку",
+    "editTitle": "Изменить поездку",
+    "nameLabel": "Название поездки",
+    "startDateLabel": "Дата начала",
+    "endDateLabel": "Дата окончания",
+    "travelersLabel": "Путешественники",
+    "budgetLabel": "Бюджет (GEL)",
+    "budgetHelper": "Необязательно",
+    "saveError": "Не удалось сохранить поездку.",
+    "genericError": "Что-то пошло не так. Попробуйте ещё раз.",
+    "deleteConfirm": "Удалить «{name}»? Это действие нельзя отменить.",
+    "deleteErrorTitle": "Не удалось удалить поездку",
+    "createButton": "Создать поездку",
+    "saveButton": "Сохранить изменения",
+    "deleteButton": "Удалить поездку"
+  },
+  "addToTrip": {
+    "sheetTitle": "Добавить в поездку",
+    "dayLabel": "День {dayNumber}",
+    "dayLabelWithDate": "День {dayNumber} · {date}",
+    "noTripYet": "У вас пока нет поездки.",
+    "createTripButton": "Создать поездку",
+    "addErrorTitle": "Не удалось добавить место",
+    "addedToast": "Добавлено в «{tripName}»",
+    "placesCount": "{count, plural, one {# место} few {# места} many {# мест} other {# места}}"
+  },
+  "addPlaceToDay": {
+    "sheetTitle": "Добавить место в День {dayNumber}",
+    "addErrorTitle": "Не удалось добавить место",
+    "addButton": "Добавить в день"
+  },
+  "noTripState": {
+    "title": "Поездки пока нет",
+    "description": "Спланируйте маршрут по Грузии — добавляйте места, задавайте даты и смотрите их на карте.",
+    "startButton": "Начать планирование"
+  },
+  "itinerary": {
+    "updateErrorTitle": "Не удалось обновить поездку",
+    "dayLabel": "День {dayNumber}",
+    "noPlaces": "Мест пока нет.",
+    "moveUp": "Переместить вверх",
+    "moveDown": "Переместить вниз",
+    "remove": "Удалить {name}",
+    "addPlaceButton": "Добавить место"
+  },
+  "map": {
+    "emptyState": "Добавьте места в поездку, чтобы увидеть их на карте."
+  },
+  "route": {
+    "checkingRoute": "Проверка маршрута…",
+    "notCalculated": "Маршрут ещё не рассчитан",
+    "recalculateButton": "Пересчитать",
+    "calculateButton": "Рассчитать маршрут",
+    "calculateErrorTitle": "Не удалось рассчитать маршрут"
+  },
+  "driverSelector": {
+    "noDrivers": "Пока нет доступных водителей.",
+    "calculatePrompt": "Рассчитайте маршрут (вкладка «Карта»), чтобы увидеть цены водителей.",
+    "selectErrorTitle": "Не удалось выбрать водителя",
+    "selectedToast": "Водитель выбран",
+    "tripsCount": "{count} поездок",
+    "selectButton": "Выбрать",
+    "selectedButton": "Выбрано"
+  },
+  "scoreCard": {
+    "title": "Оценка поездки",
+    "routeEfficiency": "Эффективность маршрута",
+    "drivingComfort": "Комфорт поездки",
+    "budgetFit": "Соответствие бюджету",
+    "preferenceMatch": "Соответствие предпочтениям",
+    "disclaimer": "Это наша рекомендация, а не гарантия — сочетание реальных данных поездки и оценки ИИ.",
+    "calculateButton": "Рассчитать оценку поездки",
+    "loadingLabel": "Оценка вашей поездки",
+    "error": "Не удалось рассчитать оценку поездки.",
+    "recalculateButton": "Пересчитать"
+  },
+  "requestPanel": {
+    "invalidPassengers": "Введите корректное количество пассажиров",
+    "requestErrorTitle": "Не удалось отправить запрос на поездку",
+    "requestErrorGeneric": "Попробуйте ещё раз.",
+    "successTitle": "Запрос отправлен",
+    "successDescription": "Мы сообщим вам, как только водитель ответит.",
+    "requestedTitle": "Запрос отправлен",
+    "statusLabel": "Статус:",
+    "viewRequestLink": "Посмотреть запрос",
+    "helperText": "Отправляет ваш маршрут, даты и примерную стоимость водителю и в Discover Georgia.",
+    "noRouteWarning": "Рассчитайте маршрут (вкладка «Карта»), прежде чем отправлять запрос.",
+    "passengersLabel": "Пассажиры",
+    "notesLabel": "Заметки",
+    "notesHelper": "Необязательно — всё, что водителю стоит знать заранее.",
+    "requestButton": "Отправить запрос на поездку"
+  },
+  "budget": {
+    "budgetLabel": "Бюджет",
+    "budgetNotSet": "Не задан",
+    "totalDistanceLabel": "Общее расстояние",
+    "totalDrivingTimeLabel": "Общее время в пути",
+    "estimatedPriceLabel": "ПРИМЕРНАЯ СТОИМОСТЬ",
+    "routeUnavailable": "Расстояние, время в пути и примерная стоимость пока недоступны — рассчитайте маршрут на вкладке «Карта».",
+    "driversHeading": "Водители"
+  },
+  "view": {
+    "deletedMessage": "Поездка удалена.",
+    "editAriaLabel": "Изменить поездку",
+    "askAiButton": "Спросить ИИ о планировании",
+    "tabListAriaLabel": "Вид поездки",
+    "tabItinerary": "Маршрут",
+    "tabMap": "Карта",
+    "tabBudget": "Бюджет",
+    "travelerCount": "{count, plural, one {# путешественник} few {# путешественника} many {# путешественников} other {# путешественника}}"
+  }
+}

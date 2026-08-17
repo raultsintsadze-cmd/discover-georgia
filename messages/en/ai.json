@@ -1,0 +1,18 @@
+{
+  "pageTitle": "Ask AI",
+  "chipOptimizeRoute": "Optimize route",
+  "chipOptimizeBudget": "Optimize budget",
+  "chipOptimizeComfort": "Optimize comfort",
+  "chipMoreNature": "More nature",
+  "chipMoreCulture": "More culture",
+  "chipMaxDestinations": "Max destinations",
+  "respondErrorToastTitle": "The AI couldn't respond",
+  "respondErrorToastDescription": "Please try again.",
+  "startError": "Couldn't start a conversation. Please try again.",
+  "greeting": "Ask me to add places, change dates, check driving times, or estimate cost — I'll use real data for anything I tell you.",
+  "tripUpdated": "✓ Trip updated",
+  "usedLabel": "Used: {tools}",
+  "inputPlaceholder": "Ask about your trip...",
+  "sendLabel": "Send",
+  "thinkingLabel": "Thinking"
+}
