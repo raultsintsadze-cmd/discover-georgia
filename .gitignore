@@ -36,3 +36,6 @@ prisma/*.db
 # (e.g. inline DATABASE_URL strings from debugging sessions), unlike
 # settings.json which is meant to be shared/committed.
 .claude/settings.local.json
+
+.vercel
+.env*
