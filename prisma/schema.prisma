@@ -6,6 +6,12 @@ generator client {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
+  // Migrations (advisory locks, DDL) run over Supabase's session-mode
+  // pooler instead — the transaction-mode pooler DATABASE_URL points at
+  // (required at runtime to avoid the "prepared statement already exists"
+  // error under serverless concurrency) doesn't support the session-level
+  // locking `prisma migrate` needs.
+  directUrl  = env("DIRECT_URL")
   extensions = [postgis]
 }
 
@@ -134,6 +140,7 @@ model User {
   notifications    Notification[]
   aiConversations  AiConversation[]
   reviewedSubmissions VideoSubmission[] @relation("SubmissionReviewer")
+  passwordResetTokens PasswordResetToken[]
 
   @@index([role])
 }
@@ -172,6 +179,25 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+/// A dedicated model rather than reusing Auth.js's VerificationToken above —
+/// that table is part of the adapter contract for a future email/magic-link
+/// provider, not ours to repurpose. `tokenHash` stores a SHA-256 hash, never
+/// the raw token (mirrors passwordHash — a DB read alone shouldn't be
+/// enough to reset an account), and `usedAt` makes redemption single-use
+/// without needing a delete-on-use race.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 // Extended, non-auth profile data. Kept separate from User so auth stays lean.

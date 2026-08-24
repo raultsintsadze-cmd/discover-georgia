@@ -4,18 +4,20 @@ import * as React from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { User, Video, Upload, LogOut } from "lucide-react";
+import { User, Video, Upload, LogOut, KeyRound } from "lucide-react";
 import { ScreenHeader } from "@/components/shell/ScreenHeader";
 import { LanguageSwitcher } from "@/components/shell/LanguageSwitcher";
 import { Card, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
 import { AuthSheet } from "@/components/auth/AuthSheet";
+import { ChangePasswordSheet } from "@/components/auth/ChangePasswordSheet";
 
 export default function ProfilePage() {
   const t = useTranslations("profile");
   const { data: session, status } = useSession();
   const [authOpen, setAuthOpen] = React.useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = React.useState(false);
 
   return (
     <div className="mx-auto max-w-md">
@@ -48,6 +50,10 @@ export default function ProfilePage() {
                     {t("becomeCreator")}
                   </Button>
                 </Link>
+                <Button variant="secondary" className="w-full" onClick={() => setChangePasswordOpen(true)}>
+                  <KeyRound className="h-4 w-4" aria-hidden="true" />
+                  {t("changePassword")}
+                </Button>
                 <Button variant="outline" className="w-full" onClick={() => signOut()}>
                   <LogOut className="h-4 w-4" aria-hidden="true" />
                   {t("signOut")}
@@ -80,6 +86,7 @@ export default function ProfilePage() {
       </div>
 
       <AuthSheet open={authOpen} onOpenChange={setAuthOpen} />
+      <ChangePasswordSheet open={changePasswordOpen} onOpenChange={setChangePasswordOpen} />
     </div>
   );
 }

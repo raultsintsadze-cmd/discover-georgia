@@ -50,5 +50,12 @@
   "videoNotFound": "ვიდეო ვერ მოიძებნა",
   "conversationNotFound": "საუბარი ვერ მოიძებნა",
   "invalidMessage": "შეტყობინება არასწორია",
-  "invalidVideoContentType": "ვიდეოს ფაილის ტიპი მხარდაუჭერელია — გამოიყენეთ MP4, MOV ან WebM"
+  "invalidVideoContentType": "ვიდეოს ფაილის ტიპი მხარდაუჭერელია — გამოიყენეთ MP4, MOV ან WebM",
+  "invalidEmail": "შეიყვანეთ სწორი ელფოსტა",
+  "invalidResetToken": "პაროლის აღდგენის ბმული არასწორია",
+  "invalidOrExpiredResetToken": "ეს ბმული არასწორია ან ვადაგასულია",
+  "signInToChangePassword": "შედით სისტემაში პაროლის შესაცვლელად",
+  "invalidPasswordChangeDetails": "პაროლის არასწორი დეტალები",
+  "incorrectCurrentPassword": "მიმდინარე პაროლი არასწორია",
+  "noPasswordSet": "ეს ანგარიში პაროლს არ იყენებს"
 }

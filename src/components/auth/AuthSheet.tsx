@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
 import { BottomSheet, BottomSheetContent } from "@/components/ui/BottomSheet";
@@ -111,6 +112,16 @@ export function AuthSheet({ open, onOpenChange, onSuccess }: AuthSheetProps) {
               />
             )}
           </Field>
+
+          {mode === "signin" && (
+            <Link
+              href="/forgot-password"
+              onClick={() => onOpenChange(false)}
+              className="-mt-2 self-end text-body-sm text-ink-500"
+            >
+              {t("forgotPasswordLink")}
+            </Link>
+          )}
 
           <Button type="submit" loading={loading} className="mt-1">
             {mode === "signin" ? t("signInSubmit") : t("signUpSubmit")}

@@ -6,5 +6,11 @@
   "submitVideo": "Submit a video",
   "becomeCreator": "Become a creator",
   "signOut": "Sign out",
-  "language": "Language"
+  "language": "Language",
+  "changePassword": "Change password",
+  "changePasswordTitle": "Change password",
+  "currentPasswordLabel": "Current password",
+  "newPasswordLabel": "New password",
+  "changePasswordSubmit": "Update password",
+  "changePasswordSuccessToast": "Password updated"
 }

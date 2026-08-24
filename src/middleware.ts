@@ -11,6 +11,7 @@ const RATE_LIMITS: { method: string; test: (pathname: string) => boolean; limit:
   { method: "POST", test: (p) => p.startsWith("/api/ai/conversations"), limit: 20, windowMs: 60_000 },
   { method: "POST", test: (p) => p === "/api/trip-requests", limit: 10, windowMs: 60_000 },
   { method: "POST", test: (p) => p === "/api/storage/upload-url", limit: 10, windowMs: 60_000 },
+  { method: "POST", test: (p) => p === "/api/auth/forgot-password", limit: 5, windowMs: 60_000 },
 ];
 
 function clientIp(request: NextRequest): string {

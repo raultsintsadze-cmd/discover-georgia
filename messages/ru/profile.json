@@ -6,5 +6,11 @@
   "submitVideo": "Добавить видео",
   "becomeCreator": "Стать автором",
   "signOut": "Выйти",
-  "language": "Язык"
+  "language": "Язык",
+  "changePassword": "Изменить пароль",
+  "changePasswordTitle": "Изменить пароль",
+  "currentPasswordLabel": "Текущий пароль",
+  "newPasswordLabel": "Новый пароль",
+  "changePasswordSubmit": "Обновить пароль",
+  "changePasswordSuccessToast": "Пароль обновлён"
 }

@@ -50,5 +50,12 @@
   "videoNotFound": "Video not found",
   "conversationNotFound": "Conversation not found",
   "invalidMessage": "Invalid message",
-  "invalidVideoContentType": "Unsupported video file type — use MP4, MOV, or WebM"
+  "invalidVideoContentType": "Unsupported video file type — use MP4, MOV, or WebM",
+  "invalidEmail": "Enter a valid email address",
+  "invalidResetToken": "Invalid reset link",
+  "invalidOrExpiredResetToken": "This reset link is invalid or has expired",
+  "signInToChangePassword": "Sign in to change your password",
+  "invalidPasswordChangeDetails": "Invalid password details",
+  "incorrectCurrentPassword": "Current password is incorrect",
+  "noPasswordSet": "This account doesn't use a password"
 }

@@ -6,5 +6,11 @@
   "submitVideo": "ვიდეოს დამატება",
   "becomeCreator": "გახდი კონტენტ-შემქმნელი",
   "signOut": "გასვლა",
-  "language": "ენა"
+  "language": "ენა",
+  "changePassword": "პაროლის შეცვლა",
+  "changePasswordTitle": "პაროლის შეცვლა",
+  "currentPasswordLabel": "მიმდინარე პაროლი",
+  "newPasswordLabel": "ახალი პაროლი",
+  "changePasswordSubmit": "პაროლის განახლება",
+  "changePasswordSuccessToast": "პაროლი განახლდა"
 }

@@ -50,5 +50,12 @@
   "videoNotFound": "Видео не найдено",
   "conversationNotFound": "Разговор не найден",
   "invalidMessage": "Некорректное сообщение",
-  "invalidVideoContentType": "Неподдерживаемый формат видео — используйте MP4, MOV или WebM"
+  "invalidVideoContentType": "Неподдерживаемый формат видео — используйте MP4, MOV или WebM",
+  "invalidEmail": "Введите корректный email",
+  "invalidResetToken": "Некорректная ссылка для сброса пароля",
+  "invalidOrExpiredResetToken": "Эта ссылка недействительна или истекла",
+  "signInToChangePassword": "Войдите, чтобы изменить пароль",
+  "invalidPasswordChangeDetails": "Некорректные данные пароля",
+  "incorrectCurrentPassword": "Текущий пароль неверен",
+  "noPasswordSet": "Этот аккаунт не использует пароль"
 }
