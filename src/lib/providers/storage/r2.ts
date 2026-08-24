@@ -12,6 +12,16 @@ const UPLOAD_URL_EXPIRY_SECONDS = 15 * 60;
  * src/app/api/media/[...key]/route.ts) which streams the object through
  * GetObjectCommand. Swapping in a real public base URL later needs no
  * code change here — see the branch below.
+ *
+ * getSignedUploadUrl's PUT happens directly browser -> R2, not through
+ * this server, so the bucket needs its own CORS policy (AllowedOrigins
+ * covering every app origin — localhost, the production domain, and
+ * Vercel preview deployments) or the browser blocks the upload's
+ * preflight entirely. That policy lives on the bucket itself (set via
+ * PutBucketCors — same S3-compatible API this file already uses), not in
+ * any env var or app config here, so it's easy to forget when adding a
+ * new origin (e.g. a custom domain) — if uploads start failing with a
+ * browser CORS error after such a change, this is the first place to check.
  */
 export class R2StorageProvider implements StorageProvider {
   private readonly client: S3Client;
