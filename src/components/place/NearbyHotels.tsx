@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Star, ExternalLink } from "lucide-react";
+import { Reveal } from "@/components/motion/Reveal";
 import type { HotelDTO } from "@/lib/services/hotel.service";
 
 export async function NearbyHotels({ hotels }: { hotels: HotelDTO[] }) {
@@ -10,8 +11,8 @@ export async function NearbyHotels({ hotels }: { hotels: HotelDTO[] }) {
     <div>
       <p className="text-h3 text-ink-900">{t("nearbyHotels.title")}</p>
       <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto pb-1">
-        {hotels.map((hotel) => (
-          <div key={hotel.id} className="w-56 shrink-0 rounded-lg border border-border bg-surface-1 p-3">
+        {hotels.map((hotel, i) => (
+          <Reveal key={hotel.id} index={i} direction="right" className="w-56 shrink-0 rounded-lg border border-border bg-surface-1 p-3">
             <p className="truncate text-body-sm font-medium text-ink-900">{hotel.name}</p>
             <p className="mt-0.5 text-caption text-ink-500">{hotel.category ?? t("nearbyHotels.defaultCategory")}</p>
             <div className="mt-1.5 flex items-center gap-1 text-caption text-ink-500">
@@ -33,7 +34,7 @@ export async function NearbyHotels({ hotels }: { hotels: HotelDTO[] }) {
                 {t("nearbyHotels.book")} <ExternalLink className="h-3 w-3" aria-hidden="true" />
               </a>
             )}
-          </div>
+          </Reveal>
         ))}
       </div>
     </div>

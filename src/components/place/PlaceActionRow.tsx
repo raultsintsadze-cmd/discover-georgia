@@ -3,10 +3,12 @@
 import * as React from "react";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { motion } from "framer-motion";
 import { Bookmark, MapPinPlus, Navigation, Share2 } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useSavedPlace } from "@/lib/hooks/useSavedPlace";
 import { AddToTripSheet } from "@/components/trip/AddToTripSheet";
+import { SaveGlyph } from "@/components/motion/SaveGlyph";
 import { cn } from "@/lib/utils/cn";
 
 export interface PlaceActionRowProps {
@@ -23,18 +25,22 @@ function ActionButton({
   onClick,
   active,
   disabled,
+  glyph = false,
 }: {
   icon: typeof Bookmark;
   label: string;
   onClick: () => void;
   active?: boolean;
   disabled?: boolean;
+  glyph?: boolean;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
       disabled={disabled}
+      whileTap={disabled ? undefined : { scale: 0.88 }}
+      transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
         "flex flex-1 flex-col items-center justify-center gap-1.5 rounded-md py-3 text-ink-700",
         "transition-colors duration-fast hover:bg-surface-2 disabled:opacity-50",
@@ -43,14 +49,14 @@ function ActionButton({
     >
       <span
         className={cn(
-          "flex h-touch w-touch items-center justify-center rounded-full border border-border",
+          "flex h-touch w-touch items-center justify-center rounded-full border border-border transition-colors duration-base",
           active && "border-accent-500 bg-accent-tint"
         )}
       >
-        <Icon className="h-5 w-5" aria-hidden="true" fill={active ? "currentColor" : "none"} />
+        {glyph ? <SaveGlyph icon={Icon} active={!!active} /> : <Icon className="h-5 w-5" aria-hidden="true" fill={active ? "currentColor" : "none"} />}
       </span>
       <span className="text-caption font-medium">{label}</span>
-    </button>
+    </motion.button>
   );
 }
 
@@ -109,6 +115,7 @@ export function PlaceActionRow({ placeId, placeName, latitude, longitude, initia
           active={saved}
           disabled={pending}
           onClick={handleToggleSave}
+          glyph
         />
         <ActionButton icon={MapPinPlus} label={t("actionRow.addToTrip")} onClick={handleAddToTrip} />
         <ActionButton icon={Navigation} label={t("actionRow.navigate")} onClick={handleNavigate} />

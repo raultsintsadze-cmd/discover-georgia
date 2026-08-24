@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { Star, ExternalLink } from "lucide-react";
+import { Reveal } from "@/components/motion/Reveal";
 import type { ActivityDTO } from "@/lib/services/activity.service";
 
 export async function NearbyActivities({ activities }: { activities: ActivityDTO[] }) {
@@ -17,8 +18,13 @@ export async function NearbyActivities({ activities }: { activities: ActivityDTO
     <div>
       <p className="text-h3 text-ink-900">{t("nearbyActivities.title")}</p>
       <div className="no-scrollbar mt-3 flex gap-3 overflow-x-auto pb-1">
-        {activities.map((activity) => (
-          <div key={activity.id} className="w-56 shrink-0 rounded-lg border border-border bg-surface-1 p-3">
+        {activities.map((activity, i) => (
+          <Reveal
+            key={activity.id}
+            index={i}
+            direction="right"
+            className="w-56 shrink-0 rounded-lg border border-border bg-surface-1 p-3"
+          >
             <p className="truncate text-body-sm font-medium text-ink-900">{activity.name}</p>
             <p className="mt-0.5 text-caption text-ink-500">{categoryLabels[activity.category] ?? activity.category}</p>
             <div className="mt-1.5 flex items-center gap-1 text-caption text-ink-500">
@@ -40,7 +46,7 @@ export async function NearbyActivities({ activities }: { activities: ActivityDTO
                 {t("nearbyActivities.book")} <ExternalLink className="h-3 w-3" aria-hidden="true" />
               </a>
             )}
-          </div>
+          </Reveal>
         ))}
       </div>
     </div>

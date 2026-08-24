@@ -51,6 +51,13 @@ export function PlaceMarkers({ places, onSelect }: PlaceMarkersProps) {
           key={place.id}
           position={{ lat: place.latitude, lng: place.longitude }}
           title={place.name}
+          // One-shot drop-in on appearance — the Maps API stops this
+          // automatically after a single drop, so it's safe to pass on
+          // every render (it also nicely replays when the result set
+          // changes, e.g. after a filter). Classic Marker (not
+          // AdvancedMarker, see note above), so this — not a CSS/motion
+          // animation — is how it can animate in at all.
+          animation={window.google.maps.Animation.DROP}
           ref={(marker) => {
             if (marker) markersRef.current.set(place.id, marker);
             else markersRef.current.delete(place.id);

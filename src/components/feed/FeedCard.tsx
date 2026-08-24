@@ -4,19 +4,26 @@ import * as React from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { Bookmark, MapPinPlus, Navigation, Share2, Volume2, VolumeX, ChevronRight } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useSavedPlace } from "@/lib/hooks/useSavedPlace";
 import { AddToTripSheet } from "@/components/trip/AddToTripSheet";
+import { SaveGlyph } from "@/components/motion/SaveGlyph";
 import { gradientForId } from "@/lib/utils/gradient";
+import { moodFor, paletteFor } from "@/lib/utils/mood";
 import { cn } from "@/lib/utils/cn";
 import type { FeedItem } from "@/lib/feed";
+
+const EASE_OUT = [0.16, 1, 0.3, 1] as const;
 
 export interface FeedCardProps {
   item: FeedItem;
   /** Whether this card is the one currently in view — drives play/pause. */
   active: boolean;
   initialSaved: boolean;
+  /** The VideoFeed's scroll container, used to derive per-card scroll progress for the parallax zoom. */
+  scrollContainerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 function RailButton({
@@ -24,29 +31,37 @@ function RailButton({
   label,
   onClick,
   active,
+  glyph = false,
 }: {
   icon: typeof Bookmark;
   label: string;
   onClick: () => void;
   active?: boolean;
+  glyph?: boolean;
 }) {
   return (
-    <button type="button" onClick={onClick} className="flex flex-col items-center gap-1 text-white">
+    <motion.button
+      type="button"
+      onClick={onClick}
+      whileTap={{ scale: 0.82 }}
+      transition={{ duration: 0.18, ease: EASE_OUT }}
+      className="flex flex-col items-center gap-1 text-white"
+    >
       <span
         className={cn(
-          "flex h-touch w-touch items-center justify-center rounded-full bg-black/30 backdrop-blur-sm",
+          "flex h-touch w-touch items-center justify-center rounded-full bg-black/30 backdrop-blur-sm transition-colors duration-base",
           active && "bg-accent-500"
         )}
       >
-        <Icon className="h-5 w-5" aria-hidden="true" fill={active ? "currentColor" : "none"} />
+        {glyph ? <SaveGlyph icon={Icon} active={!!active} /> : <Icon className="h-5 w-5" aria-hidden="true" fill={active ? "currentColor" : "none"} />}
       </span>
       <span className="text-caption drop-shadow-sm">{label}</span>
-    </button>
+    </motion.button>
   );
 }
 
 export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function FeedCard(
-  { item, active, initialSaved },
+  { item, active, initialSaved, scrollContainerRef },
   ref
 ) {
   const { status } = useSession();
@@ -56,6 +71,30 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
   const [addToTripOpen, setAddToTripOpen] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = React.useState(true);
+  const localRef = React.useRef<HTMLDivElement>(null);
+
+  const setRefs = React.useCallback(
+    (el: HTMLDivElement | null) => {
+      localRef.current = el;
+      if (typeof ref === "function") ref(el);
+      else if (ref) (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+    },
+    [ref]
+  );
+
+  const { scrollYProgress } = useScroll({
+    target: localRef,
+    container: scrollContainerRef,
+    offset: ["start end", "end start"],
+  });
+  // Subtle zoom "breathe": slightly zoomed out while entering/leaving,
+  // sharp and settled while centered in view — the parallax cue the spec
+  // asked for on the active card, done via scale (not translate) so it
+  // never reveals gaps at the object-cover edges.
+  const mediaScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.16, 1.02, 1.16]);
+
+  const mood = moodFor(item.categoryName, item.regionName);
+  const palette = paletteFor(mood);
 
   React.useEffect(() => {
     const el = videoRef.current;
@@ -109,59 +148,67 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
   }
 
   return (
-    <div ref={ref} data-feed-id={item.id} className="relative h-full w-full shrink-0 snap-start overflow-hidden bg-chrome-bg">
-      {item.video ? (
-        <video
-          ref={videoRef}
-          src={item.video.url}
-          poster={item.video.posterUrl ?? undefined}
-          muted={muted}
-          loop
-          playsInline
-          preload={active ? "auto" : "none"}
-          onEnded={() => {
-            fetch(`/api/videos/${item.video!.id}/complete`, { method: "POST" }).catch(() => {});
-          }}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      ) : (
-        <div className={cn("absolute inset-0", gradientForId(item.id))} aria-hidden="true" />
-      )}
+    <div ref={setRefs} data-feed-id={item.id} className="relative h-full w-full shrink-0 snap-start overflow-hidden bg-chrome-bg">
+      <motion.div className="absolute inset-0" style={{ scale: mediaScale }}>
+        {item.video ? (
+          <video
+            ref={videoRef}
+            src={item.video.url}
+            poster={item.video.posterUrl ?? undefined}
+            muted={muted}
+            loop
+            playsInline
+            preload={active ? "auto" : "none"}
+            onEnded={() => {
+              fetch(`/api/videos/${item.video!.id}/complete`, { method: "POST" }).catch(() => {});
+            }}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className={cn("h-full w-full", gradientForId(item.id))} aria-hidden="true" />
+        )}
+      </motion.div>
 
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-black/30"
-        aria-hidden="true"
-      />
+      {/* Mood-tinted scrim — shifts per region/category (icy blue mountains, warm gold wine country, deep teal coast) instead of one flat overlay everywhere. */}
+      <div className={cn("pointer-events-none absolute inset-0 bg-gradient-to-t", palette.overlay)} aria-hidden="true" />
 
       {item.video && (
-        <button
+        <motion.button
           type="button"
+          whileTap={{ scale: 0.85 }}
           onClick={() => setMuted((m) => !m)}
           aria-label={muted ? t("video.unmute") : t("video.mute")}
           className="absolute right-4 z-10 flex h-touch w-touch items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm"
           style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}
         >
           {muted ? <VolumeX className="h-5 w-5" aria-hidden="true" /> : <Volume2 className="h-5 w-5" aria-hidden="true" />}
-        </button>
+        </motion.button>
       )}
 
       <div className="absolute bottom-28 right-3 z-10 flex flex-col items-center gap-5">
-        <RailButton icon={Bookmark} label={saved ? t("rail.saved") : t("rail.save")} active={saved} onClick={handleToggleSave} />
+        <RailButton icon={Bookmark} label={saved ? t("rail.saved") : t("rail.save")} active={saved} onClick={handleToggleSave} glyph />
         <RailButton icon={MapPinPlus} label={t("rail.trip")} onClick={handleAddToTrip} />
         <RailButton icon={Navigation} label={t("rail.go")} onClick={handleNavigate} />
         <RailButton icon={Share2} label={t("rail.share")} onClick={handleShare} />
       </div>
 
-      <Link href={`/places/${item.slug}`} className="absolute inset-x-0 bottom-0 z-10 px-5 pb-8 pr-24">
-        <p className="text-caption font-medium uppercase tracking-wide text-white/80">
-          {item.regionName} · {item.categoryName}
-        </p>
-        <p className="font-display text-h2 text-white">{item.name}</p>
-        <p className="mt-1 line-clamp-2 text-body-sm text-white/90">{item.shortDescription}</p>
-        <span className="mt-2 inline-flex items-center gap-1 text-body-sm font-medium text-white">
-          {t("viewPlace")} <ChevronRight className="h-4 w-4" aria-hidden="true" />
-        </span>
-      </Link>
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        animate={active ? { opacity: 1, y: 0 } : { opacity: 0.55, y: 10 }}
+        transition={{ duration: 0.55, ease: EASE_OUT }}
+        className="absolute inset-x-0 bottom-0 z-10 px-5 pb-8 pr-24"
+      >
+        <Link href={`/places/${item.slug}`}>
+          <p className="text-caption font-medium uppercase tracking-wide" style={{ color: palette.accent }}>
+            {item.regionName} · {item.categoryName}
+          </p>
+          <p className="font-display text-h2 text-white">{item.name}</p>
+          <p className="mt-1 line-clamp-2 text-body-sm text-white/90">{item.shortDescription}</p>
+          <span className="mt-2 inline-flex items-center gap-1 text-body-sm font-medium text-white">
+            {t("viewPlace")} <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          </span>
+        </Link>
+      </motion.div>
 
       <AddToTripSheet open={addToTripOpen} onOpenChange={setAddToTripOpen} placeId={item.id} placeName={item.name} />
     </div>

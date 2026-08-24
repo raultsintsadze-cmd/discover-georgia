@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { motion } from "framer-motion";
 import { Compass, Map, Route, Bookmark, User } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -20,12 +21,20 @@ export function BottomNav() {
 
   return (
     <nav aria-label="Primary" className="chrome-surface fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.08] pb-safe">
-      <ul className="mx-auto flex max-w-md items-stretch justify-between px-1">
+      <ul className="relative mx-auto flex max-w-md items-stretch justify-between px-1">
         {NAV_ITEMS.map(({ href, key, icon: Icon }) => {
           const label = t(key);
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
-            <li key={href} className="flex-1">
+            <li key={href} className="relative flex-1">
+              {active && (
+                <motion.span
+                  layoutId="bottom-nav-active"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                  className="absolute inset-x-2 top-0.5 h-0.5 rounded-full bg-accent-500"
+                  aria-hidden="true"
+                />
+              )}
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
@@ -35,7 +44,13 @@ export function BottomNav() {
                   active ? "text-accent-500" : "text-chrome-ink-muted"
                 )}
               >
-                <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.75} aria-hidden="true" />
+                <motion.span
+                  animate={active ? { scale: [1, 1.22, 1] } : { scale: 1 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="flex"
+                >
+                  <Icon className="h-5 w-5" strokeWidth={active ? 2.25 : 1.75} aria-hidden="true" />
+                </motion.span>
                 <span className={cn(active && "font-medium")}>{label}</span>
               </Link>
             </li>

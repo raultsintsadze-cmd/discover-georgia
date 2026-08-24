@@ -63,7 +63,7 @@ export default async function PlacePage({ params }: PlacePageProps) {
 
   return (
     <div className="pb-12">
-      <PlaceHero name={place.name} regionName={place.regionName} />
+      <PlaceHero name={place.name} regionName={place.regionName} categoryName={place.categoryName} />
       <PlaceActionRow
         placeId={place.id}
         placeName={place.name}

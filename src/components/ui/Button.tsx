@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
 
@@ -24,7 +25,12 @@ const variantClasses: Record<ButtonVariant, string> = {
   destructive: "bg-danger-500 text-ink-onaccent hover:bg-danger-500/90",
 };
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+// Omit the handlers whose React DOM signature collides with framer-motion's
+// own (drag/animation lifecycle events) — Button renders a motion.button
+// for tap feedback, and nothing in this app needs those specific handlers.
+type NonMotionConflictingProps = "onDrag" | "onDragStart" | "onDragEnd" | "onAnimationStart" | "onAnimationEnd" | "onAnimationIteration";
+
+export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, NonMotionConflictingProps> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
@@ -33,8 +39,10 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", loading = false, disabled, children, ...props }, ref) => {
     return (
-      <button
+      <motion.button
         ref={ref}
+        whileTap={disabled || loading ? undefined : { scale: 0.96 }}
+        transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
           "inline-flex items-center justify-center rounded-md font-medium",
           "transition-colors duration-fast ease-out",
@@ -49,7 +57,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
         {children}
-      </button>
+      </motion.button>
     );
   }
 );
