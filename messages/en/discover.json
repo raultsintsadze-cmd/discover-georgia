@@ -3,6 +3,7 @@
     "signInRequiredTitle": "Sign in required",
     "signInToSave": "Sign in to save places.",
     "signInToAddToTrip": "Sign in to build a trip.",
+    "signInToInquire": "Sign in to send an inquiry.",
     "linkCopied": "Link copied"
   },
   "video": {
@@ -13,8 +14,10 @@
     "saved": "Saved",
     "save": "Save",
     "trip": "Trip",
+    "inquire": "Inquire",
     "go": "Go",
     "share": "Share"
   },
-  "viewPlace": "View place"
+  "viewPlace": "View place",
+  "viewActivity": "View activity"
 }

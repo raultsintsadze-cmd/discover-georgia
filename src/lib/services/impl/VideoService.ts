@@ -13,6 +13,7 @@ import { analyticsProvider } from "@/lib/providers/analytics/console";
 interface VideoRow {
   id: string;
   placeId: string;
+  activityId: string | null;
   url: string;
   posterUrl: string | null;
   durationSeconds: number | null;
@@ -23,6 +24,7 @@ function toDTO(video: VideoRow): VideoDTO {
   return {
     id: video.id,
     placeId: video.placeId,
+    activityId: video.activityId,
     url: video.url,
     posterUrl: video.posterUrl,
     durationSeconds: video.durationSeconds,
@@ -55,12 +57,31 @@ export class PrismaVideoService implements VideoService {
     return videos.map(toDTO);
   }
 
+  async getFeaturedForActivity(activityId: string): Promise<VideoDTO | null> {
+    const activity = await prisma.activity.findUnique({
+      where: { id: activityId },
+      include: { featuredVideo: { include: { creator: true } } },
+    });
+    if (!activity?.featuredVideo) return null;
+    return toDTO(activity.featuredVideo);
+  }
+
+  async listForActivity(activityId: string): Promise<VideoDTO[]> {
+    const videos = await prisma.video.findMany({
+      where: { activityId, status: VideoStatus.PUBLISHED },
+      include: { creator: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return videos.map(toDTO);
+  }
+
   async submitVideo(submission: VideoSubmissionInput): Promise<{ submissionId: string }> {
     const created = await prisma.videoSubmission.create({
       data: {
         submittedByUserId: submission.submittedByUserId,
         placeName: submission.placeName,
         existingPlaceId: submission.existingPlaceId,
+        existingActivityId: submission.existingActivityId,
         videoUrl: submission.videoUrl,
         description: submission.description,
         latitude: submission.latitude,
@@ -85,12 +106,15 @@ export class PrismaVideoService implements VideoService {
   async listPendingSubmissions(): Promise<VideoSubmissionSummary[]> {
     const submissions = await prisma.videoSubmission.findMany({
       where: { status: ModerationStatus.PENDING },
+      include: { existingActivity: { select: { name: true } } },
       orderBy: { createdAt: "asc" },
     });
     return submissions.map((s) => ({
       id: s.id,
       placeName: s.placeName,
       existingPlaceId: s.existingPlaceId,
+      existingActivityId: s.existingActivityId,
+      activityName: s.existingActivity?.name ?? null,
       videoUrl: s.videoUrl,
       description: s.description,
       creatorName: s.creatorName,
@@ -116,6 +140,9 @@ export class PrismaVideoService implements VideoService {
     }
 
     const place = await prisma.place.findUniqueOrThrow({ where: { id: submission.existingPlaceId } });
+    const activity = submission.existingActivityId
+      ? await prisma.activity.findUniqueOrThrow({ where: { id: submission.existingActivityId } })
+      : null;
 
     // Attribute to the submitter's own creator profile when they have one;
     // third-party curator submissions (submitting someone else's video,
@@ -125,6 +152,7 @@ export class PrismaVideoService implements VideoService {
     const video = await prisma.video.create({
       data: {
         placeId: place.id,
+        activityId: activity?.id,
         creatorId: creator?.id,
         url: submission.videoUrl,
         status: VideoStatus.PUBLISHED,
@@ -139,9 +167,14 @@ export class PrismaVideoService implements VideoService {
 
     // First approved video for a place becomes its featured video
     // automatically; subsequent ones stay "additional" until an admin
-    // explicitly calls setFeatured (spec §10).
+    // explicitly calls setFeatured (spec §10). Same rule for the tagged
+    // activity, independently — a place and its activity each get their
+    // own "first video becomes featured" moment.
     if (!place.featuredVideoId) {
       await prisma.place.update({ where: { id: place.id }, data: { featuredVideoId: video.id } });
+    }
+    if (activity && !activity.featuredVideoId) {
+      await prisma.activity.update({ where: { id: activity.id }, data: { featuredVideoId: video.id } });
     }
 
     return { videoId: video.id };
@@ -162,6 +195,14 @@ export class PrismaVideoService implements VideoService {
     await prisma.place.update({ where: { id: placeId }, data: { featuredVideoId: videoId } });
   }
 
+  async setFeaturedForActivity(activityId: string, videoId: string): Promise<void> {
+    const video = await prisma.video.findUniqueOrThrow({ where: { id: videoId } });
+    if (video.activityId !== activityId) {
+      throw new Error("Video does not belong to this activity");
+    }
+    await prisma.activity.update({ where: { id: activityId }, data: { featuredVideoId: videoId } });
+  }
+
   async recordView(videoId: string): Promise<void> {
     await prisma.video.update({ where: { id: videoId }, data: { viewCount: { increment: 1 } } });
     analyticsProvider.track({ name: "video_view", videoId });
@@ -175,7 +216,11 @@ export class PrismaVideoService implements VideoService {
   async listRecent(limit = 100): Promise<VideoAdminSummary[]> {
     const videos = await prisma.video.findMany({
       where: { status: VideoStatus.PUBLISHED },
-      include: { creator: true, place: { select: { id: true, name: true, slug: true, featuredVideoId: true } } },
+      include: {
+        creator: true,
+        place: { select: { id: true, name: true, slug: true, featuredVideoId: true } },
+        activity: { select: { id: true, name: true, slug: true, featuredVideoId: true } },
+      },
       orderBy: { createdAt: "desc" },
       take: limit,
     });
@@ -184,6 +229,8 @@ export class PrismaVideoService implements VideoService {
       placeName: v.place.name,
       placeSlug: v.place.slug,
       isFeatured: v.place.featuredVideoId === v.id,
+      activityName: v.activity?.name ?? null,
+      activitySlug: v.activity?.slug ?? null,
       viewCount: v.viewCount,
       completionCount: v.completionCount,
       createdAt: v.createdAt,

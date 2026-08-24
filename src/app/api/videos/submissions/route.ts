@@ -8,6 +8,7 @@ import { jsonOk, jsonError, zodIssuesToFields } from "@/lib/api/response";
 
 const bodySchema = z.object({
   existingPlaceId: z.string().min(1),
+  existingActivityId: z.string().min(1).optional(),
   videoUrl: z.string().trim().url(),
   description: z.string().trim().max(500).optional(),
   creatorName: z.string().trim().min(1).max(100),
@@ -39,10 +40,26 @@ export async function POST(request: NextRequest) {
     return jsonError("NOT_FOUND", t("selectedPlaceNotFound"), 404);
   }
 
+  let activityId: string | undefined;
+  if (parsed.data.existingActivityId) {
+    const activity = await prisma.activity.findUnique({
+      where: { id: parsed.data.existingActivityId },
+      select: { id: true, nearPlaceId: true },
+    });
+    // Not just "not found" — an activity picked for a different place than
+    // the one actually selected (stale client state, or a tampered
+    // request) is equally invalid here.
+    if (!activity || activity.nearPlaceId !== place.id) {
+      return jsonError("VALIDATION_ERROR", t("selectedActivityNotFound"), 400);
+    }
+    activityId = activity.id;
+  }
+
   const { submissionId } = await videoService.submitVideo({
     submittedByUserId: session.user.id,
     placeName: place.name,
     existingPlaceId: place.id,
+    existingActivityId: activityId,
     videoUrl: parsed.data.videoUrl,
     description: parsed.data.description,
     creatorName: parsed.data.creatorName,

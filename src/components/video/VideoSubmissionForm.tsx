@@ -10,6 +10,7 @@ import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { PlacePicker } from "@/components/place/PlacePicker";
+import { ActivityPicker } from "@/components/place/ActivityPicker";
 import type { PlaceSummary } from "@/lib/services/place.service";
 
 const MAX_FILE_BYTES = 200 * 1024 * 1024;
@@ -37,6 +38,7 @@ export function VideoSubmissionForm() {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [place, setPlace] = React.useState<PlaceSummary | null>(null);
+  const [activityId, setActivityId] = React.useState<string | null>(null);
   const [videoUrl, setVideoUrl] = React.useState("");
   const [fileName, setFileName] = React.useState("");
   const [uploadPercent, setUploadPercent] = React.useState<number | null>(null);
@@ -109,6 +111,7 @@ export function VideoSubmissionForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           existingPlaceId: place.id,
+          existingActivityId: activityId ?? undefined,
           videoUrl,
           description: description || undefined,
           creatorName,
@@ -135,8 +138,18 @@ export function VideoSubmissionForm() {
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <Field label={t("placeField")} required helperText={t("placeHelper")}>
-        {() => <PlacePicker value={place} onChange={setPlace} />}
+        {() => (
+          <PlacePicker
+            value={place}
+            onChange={(next) => {
+              setPlace(next);
+              setActivityId(null);
+            }}
+          />
+        )}
       </Field>
+
+      <ActivityPicker placeId={place?.id ?? null} value={activityId} onChange={setActivityId} />
 
       <Field label={t("videoField")} required helperText={uploadError ?? t("videoHelper")} errorText={uploadError ?? undefined}>
         {(fieldProps) => (

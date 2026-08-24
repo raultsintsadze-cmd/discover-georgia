@@ -60,5 +60,6 @@
   "noPasswordSet": "Этот аккаунт не использует пароль",
   "activityNotFound": "Активность не найдена",
   "signInToInquire": "Войдите, чтобы отправить запрос",
-  "invalidInquiry": "Некорректные данные запроса"
+  "invalidInquiry": "Некорректные данные запроса",
+  "selectedActivityNotFound": "Выбранная активность не найдена для этого места"
 }

@@ -12,6 +12,7 @@ interface Submission {
   id: string;
   placeName: string;
   existingPlaceId: string | null;
+  activityName: string | null;
   videoUrl: string;
   description: string | null;
   creatorName: string;
@@ -103,6 +104,7 @@ export function AdminSubmissionsQueue() {
                 <p className="text-body-sm font-medium text-ink-900">{s.placeName}</p>
                 <p className="text-caption text-ink-500">
                   {s.existingPlaceId ? "Linked to an existing place" : "No linked place — cannot approve yet"}
+                  {s.activityName ? ` · Tagged: ${s.activityName}` : ""}
                 </p>
               </div>
             </div>

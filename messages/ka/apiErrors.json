@@ -60,5 +60,6 @@
   "noPasswordSet": "ეს ანგარიში პაროლს არ იყენებს",
   "activityNotFound": "აქტივობა ვერ მოიძებნა",
   "signInToInquire": "შედით სისტემაში შეკითხვის გასაგზავნად",
-  "invalidInquiry": "შეკითხვის არასწორი დეტალები"
+  "invalidInquiry": "შეკითხვის არასწორი დეტალები",
+  "selectedActivityNotFound": "არჩეული აქტივობა ვერ მოიძებნა ამ ადგილისთვის"
 }

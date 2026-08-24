@@ -381,6 +381,7 @@ model VideoSubmission {
   submittedByUserId String
   placeName        String
   existingPlaceId  String?
+  existingActivityId String?
   videoUrl         String
   description      String?
   latitude         Float?
@@ -400,9 +401,11 @@ model VideoSubmission {
 
   submittedBy   User   @relation("SubmissionSubmitter", fields: [submittedByUserId], references: [id])
   reviewedByAdmin User? @relation("SubmissionReviewer", fields: [reviewedByAdminId], references: [id])
+  existingActivity Activity? @relation(fields: [existingActivityId], references: [id])
   resultingVideo Video?
 
   @@index([status])
+  @@index([existingActivityId])
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -606,6 +609,7 @@ model Activity {
   videos        Video[] @relation("ActivityVideos")
   savedBy       SavedActivity[]
   inquiries     ActivityInquiry[]
+  videoSubmissions VideoSubmission[]
 
   @@index([nearPlaceId])
   @@index([category])

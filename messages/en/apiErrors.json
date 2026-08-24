@@ -60,5 +60,6 @@
   "noPasswordSet": "This account doesn't use a password",
   "activityNotFound": "Activity not found",
   "signInToInquire": "Sign in to send an inquiry",
-  "invalidInquiry": "Invalid inquiry details"
+  "invalidInquiry": "Invalid inquiry details",
+  "selectedActivityNotFound": "Selected activity not found for this place"
 }

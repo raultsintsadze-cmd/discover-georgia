@@ -21,18 +21,24 @@ export function VideoFeed({ initialItems, initialHasMore }: VideoFeedProps) {
   const loadingMoreRef = React.useRef(false);
   const [activeId, setActiveId] = React.useState<string | null>(initialItems[0]?.id ?? null);
   const viewedIds = React.useRef<Set<string>>(new Set());
-  const [savedIds, setSavedIds] = React.useState<Set<string>>(new Set());
+  const [savedPlaceIds, setSavedPlaceIds] = React.useState<Set<string>>(new Set());
+  const [savedActivityIds, setSavedActivityIds] = React.useState<Set<string>>(new Set());
 
   // Fetched once per session so each card knows its initial saved state
-  // without every card firing its own request.
+  // without every card firing its own request. Two separate saved-item
+  // types (SavedPlace/SavedActivity, see docs/architecture.md — this
+  // codebase doesn't use polymorphic associations), so two lookups.
   React.useEffect(() => {
     if (status !== "authenticated") {
-      setSavedIds(new Set());
+      setSavedPlaceIds(new Set());
+      setSavedActivityIds(new Set());
       return;
     }
-    fetch("/api/saved")
-      .then((res) => res.json())
-      .then((body) => setSavedIds(new Set((body.data ?? []).map((s: { placeId: string }) => s.placeId))))
+    Promise.all([fetch("/api/saved").then((res) => res.json()), fetch("/api/saved-activities").then((res) => res.json())])
+      .then(([placesBody, activitiesBody]) => {
+        setSavedPlaceIds(new Set((placesBody.data ?? []).map((s: { placeId: string }) => s.placeId)));
+        setSavedActivityIds(new Set((activitiesBody.data ?? []).map((s: { activityId: string }) => s.activityId)));
+      })
       .catch(() => {});
   }, [status]);
 
@@ -110,7 +116,7 @@ export function VideoFeed({ initialItems, initialHasMore }: VideoFeedProps) {
           key={item.id}
           item={item}
           active={item.id === activeId}
-          initialSaved={savedIds.has(item.id)}
+          initialSaved={item.kind === "place" ? savedPlaceIds.has(item.id) : savedActivityIds.has(item.id)}
           scrollContainerRef={containerRef}
           ref={(el) => {
             if (el) cardRefs.current.set(item.id, el);

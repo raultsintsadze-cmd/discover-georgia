@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Bookmark, MapPinPlus, Navigation, Share2, Volume2, VolumeX, ChevronRight } from "lucide-react";
+import { Bookmark, MapPinPlus, MessageCircleQuestion, Navigation, Share2, Volume2, VolumeX, ChevronRight } from "lucide-react";
 import { useToast } from "@/components/ui/Toast";
 import { useSavedPlace } from "@/lib/hooks/useSavedPlace";
+import { useSavedActivity } from "@/lib/hooks/useSavedActivity";
 import { AddToTripSheet } from "@/components/trip/AddToTripSheet";
+import { InquireSheet } from "@/components/place/InquireSheet";
 import { SaveGlyph } from "@/components/motion/SaveGlyph";
 import { gradientForId } from "@/lib/utils/gradient";
 import { moodFor, paletteFor } from "@/lib/utils/mood";
@@ -67,8 +69,15 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
   const { status } = useSession();
   const { toast } = useToast();
   const t = useTranslations("discover");
-  const { saved, toggle } = useSavedPlace(item.id, initialSaved);
+  const tActivity = useTranslations("activity");
+  // Both hooks always called (rules-of-hooks) — only one's state is used,
+  // picked by item.kind below. Each is a cheap no-op fetch/toggle target
+  // for the kind it doesn't apply to since it's never invoked.
+  const placeSaved = useSavedPlace(item.kind === "place" ? item.id : "", item.kind === "place" && initialSaved);
+  const activitySaved = useSavedActivity(item.kind === "activity" ? item.id : "", item.kind === "activity" && initialSaved);
+  const { saved, toggle } = item.kind === "place" ? placeSaved : activitySaved;
   const [addToTripOpen, setAddToTripOpen] = React.useState(false);
+  const [inquireOpen, setInquireOpen] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = React.useState(true);
   const localRef = React.useRef<HTMLDivElement>(null);
@@ -93,8 +102,10 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
   // never reveals gaps at the object-cover edges.
   const mediaScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.16, 1.02, 1.16]);
 
-  const mood = moodFor(item.categoryName, item.regionName);
+  const mood = item.kind === "place" ? moodFor(item.categoryName, item.regionName) : moodFor(item.category, item.nearPlaceName);
   const palette = paletteFor(mood);
+  const categoryLabel = item.kind === "activity" ? tActivity(`categories.${item.category}` as `categories.${string}`) : null;
+  const detailHref = item.kind === "place" ? `/places/${item.slug}` : `/activities/${item.slug}`;
 
   React.useEffect(() => {
     const el = videoRef.current;
@@ -128,8 +139,16 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
     setAddToTripOpen(true);
   }
 
+  function handleInquire() {
+    if (status !== "authenticated") {
+      requireSignIn(t("toast.signInToInquire"));
+      return;
+    }
+    setInquireOpen(true);
+  }
+
   async function handleShare() {
-    const url = `${window.location.origin}/places/${item.slug}`;
+    const url = `${window.location.origin}${detailHref}`;
     if (navigator.share) {
       try {
         await navigator.share({ title: item.name, url });
@@ -187,7 +206,11 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
 
       <div className="absolute bottom-28 right-3 z-10 flex flex-col items-center gap-5">
         <RailButton icon={Bookmark} label={saved ? t("rail.saved") : t("rail.save")} active={saved} onClick={handleToggleSave} glyph />
-        <RailButton icon={MapPinPlus} label={t("rail.trip")} onClick={handleAddToTrip} />
+        {item.kind === "place" ? (
+          <RailButton icon={MapPinPlus} label={t("rail.trip")} onClick={handleAddToTrip} />
+        ) : (
+          <RailButton icon={MessageCircleQuestion} label={t("rail.inquire")} onClick={handleInquire} />
+        )}
         <RailButton icon={Navigation} label={t("rail.go")} onClick={handleNavigate} />
         <RailButton icon={Share2} label={t("rail.share")} onClick={handleShare} />
       </div>
@@ -198,19 +221,36 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
         transition={{ duration: 0.55, ease: EASE_OUT }}
         className="absolute inset-x-0 bottom-0 z-10 px-5 pb-8 pr-24"
       >
-        <Link href={`/places/${item.slug}`}>
-          <p className="text-caption font-medium uppercase tracking-wide" style={{ color: palette.accent }}>
-            {item.regionName} · {item.categoryName}
-          </p>
-          <p className="font-display text-h2 text-white">{item.name}</p>
-          <p className="mt-1 line-clamp-2 text-body-sm text-white/90">{item.shortDescription}</p>
+        <Link href={detailHref}>
+          {item.kind === "place" ? (
+            <>
+              <p className="text-caption font-medium uppercase tracking-wide" style={{ color: palette.accent }}>
+                {item.regionName} · {item.categoryName}
+              </p>
+              <p className="font-display text-h2 text-white">{item.name}</p>
+              <p className="mt-1 line-clamp-2 text-body-sm text-white/90">{item.shortDescription}</p>
+            </>
+          ) : (
+            <>
+              <p className="text-caption font-medium uppercase tracking-wide" style={{ color: palette.accent }}>
+                {categoryLabel}
+                {item.nearPlaceName ? ` · ${item.nearPlaceName}` : ""}
+              </p>
+              <p className="font-display text-h2 text-white">{item.name}</p>
+              {item.description && <p className="mt-1 line-clamp-2 text-body-sm text-white/90">{item.description}</p>}
+            </>
+          )}
           <span className="mt-2 inline-flex items-center gap-1 text-body-sm font-medium text-white">
-            {t("viewPlace")} <ChevronRight className="h-4 w-4" aria-hidden="true" />
+            {item.kind === "place" ? t("viewPlace") : t("viewActivity")} <ChevronRight className="h-4 w-4" aria-hidden="true" />
           </span>
         </Link>
       </motion.div>
 
-      <AddToTripSheet open={addToTripOpen} onOpenChange={setAddToTripOpen} placeId={item.id} placeName={item.name} />
+      {item.kind === "place" ? (
+        <AddToTripSheet open={addToTripOpen} onOpenChange={setAddToTripOpen} placeId={item.id} placeName={item.name} />
+      ) : (
+        <InquireSheet open={inquireOpen} onOpenChange={setInquireOpen} activitySlug={item.slug} />
+      )}
     </div>
   );
 });
