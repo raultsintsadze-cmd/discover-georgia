@@ -57,5 +57,8 @@
   "signInToChangePassword": "შედით სისტემაში პაროლის შესაცვლელად",
   "invalidPasswordChangeDetails": "პაროლის არასწორი დეტალები",
   "incorrectCurrentPassword": "მიმდინარე პაროლი არასწორია",
-  "noPasswordSet": "ეს ანგარიში პაროლს არ იყენებს"
+  "noPasswordSet": "ეს ანგარიში პაროლს არ იყენებს",
+  "activityNotFound": "აქტივობა ვერ მოიძებნა",
+  "signInToInquire": "შედით სისტემაში შეკითხვის გასაგზავნად",
+  "invalidInquiry": "შეკითხვის არასწორი დეტალები"
 }

@@ -57,5 +57,8 @@
   "signInToChangePassword": "Войдите, чтобы изменить пароль",
   "invalidPasswordChangeDetails": "Некорректные данные пароля",
   "incorrectCurrentPassword": "Текущий пароль неверен",
-  "noPasswordSet": "Этот аккаунт не использует пароль"
+  "noPasswordSet": "Этот аккаунт не использует пароль",
+  "activityNotFound": "Активность не найдена",
+  "signInToInquire": "Войдите, чтобы отправить запрос",
+  "invalidInquiry": "Некорректные данные запроса"
 }

@@ -13,6 +13,7 @@ export interface NotificationService {
 export interface RecordNotificationInput {
   userId?: string;
   tripRequestId?: string;
+  activityInquiryId?: string;
   channel: "TELEGRAM" | "EMAIL" | "PUSH";
   type: string;
   payload: Record<string, unknown>;

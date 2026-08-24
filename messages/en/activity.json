@@ -1,0 +1,39 @@
+{
+  "hero": {
+    "atPlace": "At {place}"
+  },
+  "categories": {
+    "TOUR": "Tour",
+    "WINE_TASTING": "Wine tasting",
+    "ADVENTURE": "Adventure",
+    "CULTURE": "Culture",
+    "GENERAL": "Activity"
+  },
+  "priceLabel": "Price",
+  "ratingLabel": "Rating",
+  "notRated": "Not rated",
+  "priceUnavailable": "Price not currently available",
+  "price": "~{price} GEL",
+  "actionRow": {
+    "saved": "Saved",
+    "save": "Save",
+    "inquire": "Inquire",
+    "bookDirectly": "Book directly"
+  },
+  "inquireSheet": {
+    "title": "Inquire about this activity",
+    "description": "Tell us a bit about what you're looking for and we'll get back to you.",
+    "nameLabel": "Your name",
+    "emailLabel": "Contact email",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Optional — dates, group size, questions...",
+    "submit": "Send inquiry",
+    "successToast": "Inquiry sent — we'll be in touch"
+  },
+  "toast": {
+    "signInRequiredTitle": "Sign in required",
+    "signInToSave": "Sign in to save activities.",
+    "signInToInquire": "Sign in to send an inquiry."
+  },
+  "loading": "Loading activity"
+}

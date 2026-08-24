@@ -19,6 +19,7 @@ export class PrismaNotificationService implements NotificationService {
       data: {
         userId: input.userId,
         tripRequestId: input.tripRequestId,
+        activityInquiryId: input.activityInquiryId,
         channel: input.channel as NotificationChannel,
         type: input.type,
         payload: input.payload as Prisma.InputJsonValue,

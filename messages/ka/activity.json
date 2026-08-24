@@ -1,0 +1,39 @@
+{
+  "hero": {
+    "atPlace": "{place}-ში"
+  },
+  "categories": {
+    "TOUR": "ტური",
+    "WINE_TASTING": "ღვინის დეგუსტაცია",
+    "ADVENTURE": "სათავგადასავლო",
+    "CULTURE": "კულტურა",
+    "GENERAL": "აქტივობა"
+  },
+  "priceLabel": "ფასი",
+  "ratingLabel": "შეფასება",
+  "notRated": "შეფასების გარეშე",
+  "priceUnavailable": "ფასი ამჟამად მიუწვდომელია",
+  "price": "~{price} ლარი",
+  "actionRow": {
+    "saved": "შენახულია",
+    "save": "შენახვა",
+    "inquire": "შეკითხვა",
+    "bookDirectly": "დაჯავშნა პირდაპირ"
+  },
+  "inquireSheet": {
+    "title": "იკითხეთ ამ აქტივობის შესახებ",
+    "description": "მოგვწერეთ, რას ეძებთ და დაგიკავშირდებით.",
+    "nameLabel": "თქვენი სახელი",
+    "emailLabel": "საკონტაქტო ელფოსტა",
+    "messageLabel": "შეტყობინება",
+    "messagePlaceholder": "არასავალდებულო — თარიღები, ჯგუფის ზომა, კითხვები...",
+    "submit": "შეკითხვის გაგზავნა",
+    "successToast": "შეკითხვა გაიგზავნა — მალე დაგიკავშირდებით"
+  },
+  "toast": {
+    "signInRequiredTitle": "საჭიროა სისტემაში შესვლა",
+    "signInToSave": "შედით სისტემაში აქტივობების შესანახად.",
+    "signInToInquire": "შედით სისტემაში შეკითხვის გასაგზავნად."
+  },
+  "loading": "აქტივობის ჩატვირთვა"
+}

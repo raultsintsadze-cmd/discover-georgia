@@ -49,6 +49,7 @@ const NAMESPACES = [
   "saved",
   "profile",
   "place",
+  "activity",
   "region",
   "category",
   "auth",

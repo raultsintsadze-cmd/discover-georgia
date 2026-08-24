@@ -14,6 +14,7 @@ import {
   DriverAvailabilityStatus,
   ActivityCategory,
 } from "@prisma/client";
+import { slugify } from "../src/lib/utils/slugify";
 
 const prisma = new PrismaClient();
 
@@ -984,6 +985,7 @@ async function main() {
     await prisma.activity.create({
       data: {
         name: activity.name,
+        slug: slugify(activity.name),
         nearPlaceId: place.id,
         category: activity.category,
         latitude: place.latitude + activity.latOffset,

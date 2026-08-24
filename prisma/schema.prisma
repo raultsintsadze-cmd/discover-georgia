@@ -100,6 +100,12 @@ enum ActivityCategory {
   GENERAL
 }
 
+enum InquiryStatus {
+  PENDING
+  CONTACTED
+  CLOSED
+}
+
 enum AiMessageRole {
   USER
   ASSISTANT
@@ -134,6 +140,7 @@ model User {
   driver           Driver?           @relation("DriverUser")
   reviewedDrivers  Driver[]          @relation("DriverReviewer")
   savedPlaces      SavedPlace[]
+  savedActivities  SavedActivity[]
   trips            Trip[]
   videoSubmissions VideoSubmission[] @relation("SubmissionSubmitter")
   tripRequests     TripRequest[]
@@ -141,6 +148,7 @@ model User {
   aiConversations  AiConversation[]
   reviewedSubmissions VideoSubmission[] @relation("SubmissionReviewer")
   passwordResetTokens PasswordResetToken[]
+  activityInquiries   ActivityInquiry[]
 
   @@index([role])
 }
@@ -352,10 +360,17 @@ model Video {
 
   place             Place            @relation("PlaceVideos", fields: [placeId], references: [id], onDelete: Cascade)
   featuredForPlace  Place?           @relation("FeaturedVideo")
+  // Nullable, unlike placeId — set once video submission can tag a
+  // specific activity (Stage 3). A video always belongs to a place; it's
+  // only sometimes *also* about one particular activity there.
+  activityId        String?
+  activity          Activity?        @relation("ActivityVideos", fields: [activityId], references: [id])
+  featuredForActivity Activity?      @relation("ActivityFeaturedVideo")
   creator           Creator?         @relation(fields: [creatorId], references: [id])
   sourceSubmission  VideoSubmission? @relation(fields: [sourceSubmissionId], references: [id])
 
   @@index([placeId])
+  @@index([activityId])
   @@index([status])
 }
 
@@ -404,6 +419,24 @@ model SavedPlace {
   place Place @relation(fields: [placeId], references: [id], onDelete: Cascade)
 
   @@unique([userId, placeId])
+  @@index([userId])
+}
+
+/// Mirrors SavedPlace exactly (same shape, same semantics) rather than a
+/// single polymorphic "SavedItem" table — see the Activity-as-first-class-
+/// content design note above Activity: this codebase never uses
+/// polymorphic associations, and Postgres can't enforce "exactly one of
+/// placeId/activityId is set" the way two real FKs enforce themselves.
+model SavedActivity {
+  id         String   @id @default(cuid())
+  userId     String
+  activityId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, activityId])
   @@index([userId])
 }
 
@@ -548,6 +581,11 @@ model Restaurant {
 model Activity {
   id           String           @id @default(cuid())
   name         String
+  // Unique like Place.slug, generated the same way (see PlaceService's
+  // slugify + collision-suffix pattern) — needed once Activity gets its
+  // own detail page URL (/activities/[slug]) instead of only ever
+  // appearing nested under a Place.
+  slug         String           @unique
   nearPlaceId  String?
   category     ActivityCategory @default(GENERAL)
   latitude     Float
@@ -559,13 +597,41 @@ model Activity {
   affiliatePartner String?
   commission   Decimal?         @db.Decimal(5, 2)
   featured     Boolean          @default(false)
+  featuredVideoId String?       @unique
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
 
-  nearPlace Place? @relation(fields: [nearPlaceId], references: [id])
+  nearPlace     Place?  @relation(fields: [nearPlaceId], references: [id])
+  featuredVideo Video?  @relation("ActivityFeaturedVideo", fields: [featuredVideoId], references: [id])
+  videos        Video[] @relation("ActivityVideos")
+  savedBy       SavedActivity[]
+  inquiries     ActivityInquiry[]
 
   @@index([nearPlaceId])
   @@index([category])
+}
+
+/// A booking inquiry submitted from an activity's page — deliberately not
+/// TripRequest (driver/route/passengers-specific, wrong shape here).
+/// userId is nullable so a guest can inquire, same as VideoSubmission's
+/// contactEmail-without-account pattern.
+model ActivityInquiry {
+  id           String        @id @default(cuid())
+  activityId   String
+  userId       String?
+  contactName  String
+  contactEmail String
+  message      String?
+  status       InquiryStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+
+  activity Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [userId], references: [id])
+
+  notifications Notification[]
+
+  @@index([activityId])
+  @@index([status])
 }
 
 // ─────────────────────────────────────────────────────────────────────────
@@ -675,6 +741,7 @@ model Notification {
   id            String              @id @default(cuid())
   userId        String?
   tripRequestId String?
+  activityInquiryId String?
   channel       NotificationChannel
   type          String // e.g. "trip_request.created"
   payload       Json
@@ -683,8 +750,9 @@ model Notification {
   error         String?
   createdAt     DateTime            @default(now())
 
-  user        User?        @relation(fields: [userId], references: [id])
-  tripRequest TripRequest? @relation(fields: [tripRequestId], references: [id])
+  user            User?            @relation(fields: [userId], references: [id])
+  tripRequest     TripRequest?     @relation(fields: [tripRequestId], references: [id])
+  activityInquiry ActivityInquiry? @relation(fields: [activityInquiryId], references: [id])
 
   @@index([status])
 }

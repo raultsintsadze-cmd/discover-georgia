@@ -14,19 +14,11 @@ import type { LatLng } from "@/lib/types/domain";
 import { analyticsProvider } from "@/lib/providers/analytics/console";
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales";
 import { localize } from "@/lib/utils/localize";
+import { slugify } from "@/lib/utils/slugify";
 
 const DEFAULT_PAGE_SIZE = 20;
 const NEARBY_ON_DETAIL_LIMIT = 6;
 const NEARBY_ON_DETAIL_RADIUS_KM = 50;
-
-function slugify(name: string): string {
-  return name
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/\p{Diacritic}/gu, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 /** Row shape returned by the raw PostGIS queries below (see docs/database.md §2). */
 interface PlaceRow {

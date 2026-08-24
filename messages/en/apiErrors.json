@@ -57,5 +57,8 @@
   "signInToChangePassword": "Sign in to change your password",
   "invalidPasswordChangeDetails": "Invalid password details",
   "incorrectCurrentPassword": "Current password is incorrect",
-  "noPasswordSet": "This account doesn't use a password"
+  "noPasswordSet": "This account doesn't use a password",
+  "activityNotFound": "Activity not found",
+  "signInToInquire": "Sign in to send an inquiry",
+  "invalidInquiry": "Invalid inquiry details"
 }

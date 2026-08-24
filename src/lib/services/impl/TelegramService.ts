@@ -2,6 +2,7 @@ import "server-only";
 import { prisma } from "@/lib/db/client";
 import type { TelegramService, TripRequestNotificationContext } from "../telegram.service";
 import type { TripRequestDTO } from "../booking.service";
+import type { ActivityInquiryDTO } from "../activity.service";
 import { telegramProvider } from "@/lib/providers/telegram/telegram";
 import { notificationService } from "./NotificationService";
 import { formatDistanceMeters, formatDuration } from "@/lib/utils/format";
@@ -37,6 +38,17 @@ function buildDriverMessage(request: TripRequestDTO, ctx: TripRequestNotificatio
   ].join("\n");
 }
 
+function buildActivityInquiryMessage(inquiry: ActivityInquiryDTO, activityName: string): string {
+  return [
+    "NEW ACTIVITY INQUIRY",
+    "",
+    `Activity: ${activityName} (#${shortId(inquiry.id)})`,
+    `From: ${inquiry.contactName}`,
+    `Email: ${inquiry.contactEmail}`,
+    ...(inquiry.message ? [`Message: ${inquiry.message}`] : []),
+  ].join("\n");
+}
+
 /**
  * Always writes a Notification row — even a missing chatId is a recorded
  * FAILED attempt, not a silent no-op, so the audit trail (docs/database.md
@@ -49,11 +61,12 @@ async function sendAndRecord(
   chatId: string | null,
   text: string,
   type: string,
-  input: { userId?: string; tripRequestId: string }
+  input: { userId?: string; tripRequestId?: string; activityInquiryId?: string }
 ): Promise<void> {
   const { notificationId } = await notificationService.record({
     userId: input.userId,
     tripRequestId: input.tripRequestId,
+    activityInquiryId: input.activityInquiryId,
     channel: "TELEGRAM",
     type,
     payload: { chatId, text },
@@ -90,6 +103,15 @@ export class PrismaTelegramService implements TelegramService {
       userId: driver?.userId ?? undefined,
       tripRequestId: request.id,
     });
+  }
+
+  async notifyAdminActivityInquiry(inquiry: ActivityInquiryDTO, activityName: string): Promise<void> {
+    await sendAndRecord(
+      process.env.ADMIN_CHAT_ID ?? null,
+      buildActivityInquiryMessage(inquiry, activityName),
+      "activity_inquiry.created.admin",
+      { activityInquiryId: inquiry.id }
+    );
   }
 }
 

@@ -1,0 +1,39 @@
+{
+  "hero": {
+    "atPlace": "В {place}"
+  },
+  "categories": {
+    "TOUR": "Тур",
+    "WINE_TASTING": "Дегустация вина",
+    "ADVENTURE": "Приключение",
+    "CULTURE": "Культура",
+    "GENERAL": "Активность"
+  },
+  "priceLabel": "Цена",
+  "ratingLabel": "Рейтинг",
+  "notRated": "Без рейтинга",
+  "priceUnavailable": "Цена пока недоступна",
+  "price": "~{price} лари",
+  "actionRow": {
+    "saved": "Сохранено",
+    "save": "Сохранить",
+    "inquire": "Узнать подробнее",
+    "bookDirectly": "Забронировать напрямую"
+  },
+  "inquireSheet": {
+    "title": "Узнать об этой активности",
+    "description": "Расскажите, что вас интересует, и мы свяжемся с вами.",
+    "nameLabel": "Ваше имя",
+    "emailLabel": "Контактный email",
+    "messageLabel": "Сообщение",
+    "messagePlaceholder": "Необязательно — даты, размер группы, вопросы...",
+    "submit": "Отправить запрос",
+    "successToast": "Запрос отправлен — мы скоро свяжемся с вами"
+  },
+  "toast": {
+    "signInRequiredTitle": "Требуется вход",
+    "signInToSave": "Войдите, чтобы сохранять активности.",
+    "signInToInquire": "Войдите, чтобы отправить запрос."
+  },
+  "loading": "Загрузка активности"
+}
