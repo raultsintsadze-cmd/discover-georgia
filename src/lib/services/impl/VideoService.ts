@@ -9,12 +9,14 @@ import type {
   VideoAdminSummary,
 } from "../video.service";
 import { analyticsProvider } from "@/lib/providers/analytics/console";
+import { toH264PlaybackUrl } from "@/lib/utils/cloudinaryPlayback";
 
 interface VideoRow {
   id: string;
   placeId: string;
   activityId: string | null;
   url: string;
+  detectedCodec: string | null;
   posterUrl: string | null;
   durationSeconds: number | null;
   creator: { displayName: string } | null;
@@ -25,7 +27,8 @@ function toDTO(video: VideoRow): VideoDTO {
     id: video.id,
     placeId: video.placeId,
     activityId: video.activityId,
-    url: video.url,
+    url: toH264PlaybackUrl(video.url),
+    detectedCodec: video.detectedCodec,
     posterUrl: video.posterUrl,
     durationSeconds: video.durationSeconds,
     creatorName: video.creator?.displayName ?? null,
@@ -83,6 +86,7 @@ export class PrismaVideoService implements VideoService {
         existingPlaceId: submission.existingPlaceId,
         existingActivityId: submission.existingActivityId,
         videoUrl: submission.videoUrl,
+        detectedCodec: submission.detectedCodec,
         description: submission.description,
         latitude: submission.latitude,
         longitude: submission.longitude,
@@ -115,7 +119,12 @@ export class PrismaVideoService implements VideoService {
       existingPlaceId: s.existingPlaceId,
       existingActivityId: s.existingActivityId,
       activityName: s.existingActivity?.name ?? null,
-      videoUrl: s.videoUrl,
+      detectedCodec: s.detectedCodec,
+      // Wrapped the same as published videos (see toDTO) — the file
+      // already exists in R2 at submission time (upload happens before
+      // this row is created), so an admin can actually preview an HEVC
+      // submission's playback before approving, not just click a dead link.
+      videoUrl: toH264PlaybackUrl(s.videoUrl),
       description: s.description,
       creatorName: s.creatorName,
       instagram: s.instagram,
@@ -155,6 +164,7 @@ export class PrismaVideoService implements VideoService {
         activityId: activity?.id,
         creatorId: creator?.id,
         url: submission.videoUrl,
+        detectedCodec: submission.detectedCodec,
         status: VideoStatus.PUBLISHED,
         sourceSubmissionId: submission.id,
       },

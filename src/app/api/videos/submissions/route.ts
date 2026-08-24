@@ -10,6 +10,9 @@ const bodySchema = z.object({
   existingPlaceId: z.string().min(1),
   existingActivityId: z.string().min(1).optional(),
   videoUrl: z.string().trim().url(),
+  // Client-side sniff (see lib/utils/videoCodec.ts) — trusted informational
+  // data, not re-verified server-side. Never gates the submission.
+  detectedCodec: z.enum(["h264", "hevc", "vp9", "av1", "other", "unknown"]).optional(),
   description: z.string().trim().max(500).optional(),
   creatorName: z.string().trim().min(1).max(100),
   instagram: z.string().trim().max(100).optional(),
@@ -61,6 +64,7 @@ export async function POST(request: NextRequest) {
     existingPlaceId: place.id,
     existingActivityId: activityId,
     videoUrl: parsed.data.videoUrl,
+    detectedCodec: parsed.data.detectedCodec,
     description: parsed.data.description,
     creatorName: parsed.data.creatorName,
     instagram: parsed.data.instagram,

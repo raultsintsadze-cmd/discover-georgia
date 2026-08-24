@@ -39,6 +39,8 @@ export interface VideoDTO {
   /** Nullable — a video always belongs to a place, only sometimes also tags one specific activity there. */
   activityId: string | null;
   url: string;
+  /** Client-side sniff at submission time — informational, see schema.prisma's Video.detectedCodec comment. */
+  detectedCodec: string | null;
   posterUrl: string | null;
   durationSeconds: number | null;
   creatorName: string | null;
@@ -51,6 +53,7 @@ export interface VideoSubmissionInput {
   /** Must belong to existingPlaceId — validated at the route layer before this is called. */
   existingActivityId?: string;
   videoUrl: string;
+  detectedCodec?: string;
   description?: string;
   latitude?: number;
   longitude?: number;
@@ -70,6 +73,7 @@ export interface VideoSubmissionSummary {
   existingActivityId: string | null;
   /** Denormalized for the admin queue display — avoids a second lookup per row. */
   activityName: string | null;
+  detectedCodec: string | null;
   videoUrl: string;
   description: string | null;
   creatorName: string;

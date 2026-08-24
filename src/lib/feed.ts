@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/db/client";
 import { PlaceStatus } from "@prisma/client";
+import { toH264PlaybackUrl } from "@/lib/utils/cloudinaryPlayback";
 
 export interface FeedVideo {
   id: string;
@@ -83,7 +84,9 @@ export async function getFeedPage(page: number, pageSize: number): Promise<FeedP
     categoryName: p.category.name,
     latitude: p.latitude,
     longitude: p.longitude,
-    video: p.featuredVideo ? { id: p.featuredVideo.id, url: p.featuredVideo.url, posterUrl: p.featuredVideo.posterUrl } : null,
+    video: p.featuredVideo
+      ? { id: p.featuredVideo.id, url: toH264PlaybackUrl(p.featuredVideo.url), posterUrl: p.featuredVideo.posterUrl }
+      : null,
   }));
 
   const activityItems: FeedItem[] = activities
@@ -100,7 +103,7 @@ export async function getFeedPage(page: number, pageSize: number): Promise<FeedP
       nearPlaceSlug: a.nearPlace?.slug ?? null,
       latitude: a.latitude,
       longitude: a.longitude,
-      video: { id: a.featuredVideo.id, url: a.featuredVideo.url, posterUrl: a.featuredVideo.posterUrl },
+      video: { id: a.featuredVideo.id, url: toH264PlaybackUrl(a.featuredVideo.url), posterUrl: a.featuredVideo.posterUrl },
     }));
 
   const merged = [...placeItems, ...activityItems].sort((a, b) => a.name.localeCompare(b.name));

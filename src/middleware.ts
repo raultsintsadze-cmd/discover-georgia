@@ -24,6 +24,16 @@ function clientIp(request: NextRequest): string {
 // needs an explicit connect-src allowance or the browser blocks the XHR.
 const storageConnectSrc = process.env.STORAGE_ENDPOINT ? ` ${process.env.STORAGE_ENDPOINT}` : "";
 
+// VideoService/feed.ts wrap published video URLs through Cloudinary's
+// fetch-transform for H.264 playback (see lib/utils/cloudinaryPlayback.ts)
+// — <video> elements load that cross-origin URL directly, which without
+// an explicit media-src falls back to default-src 'self' and gets
+// silently blocked (confirmed live: Chrome's MEDIA_ELEMENT_ERROR code 4,
+// "Media load rejected by URL safety check", no network request even
+// attempted). Conditional on the env var so this origin isn't granted
+// when the feature isn't configured.
+const cloudinaryMediaSrc = process.env.CLOUDINARY_CLOUD_NAME ? " https://res.cloudinary.com" : "";
+
 // A pragmatic baseline, not a perfect CSP: Next's inline hydration
 // bootstrap needs 'unsafe-inline' without nonce plumbing, and the Map
 // screen needs Google's domains explicitly allow-listed. 'unsafe-eval' is
@@ -37,6 +47,7 @@ const CSP = [
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
+  `media-src 'self'${cloudinaryMediaSrc}`,
   `connect-src 'self' https://maps.googleapis.com https://*.google.com${storageConnectSrc}`,
   "frame-src 'self' https://www.google.com",
   "frame-ancestors 'none'",

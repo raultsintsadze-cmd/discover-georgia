@@ -4,6 +4,7 @@ import * as React from "react";
 import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 import { Spinner } from "@/components/ui/Spinner";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useToast } from "@/components/ui/Toast";
@@ -13,6 +14,7 @@ interface Submission {
   placeName: string;
   existingPlaceId: string | null;
   activityName: string | null;
+  detectedCodec: string | null;
   videoUrl: string;
   description: string | null;
   creatorName: string;
@@ -107,6 +109,11 @@ export function AdminSubmissionsQueue() {
                   {s.activityName ? ` · Tagged: ${s.activityName}` : ""}
                 </p>
               </div>
+              {s.detectedCodec === "hevc" && (
+                <Badge variant="warning" className="shrink-0">
+                  HEVC detected
+                </Badge>
+              )}
             </div>
             <p className="mt-2 text-body-sm text-ink-700">{s.description ?? "No description provided."}</p>
             <a href={s.videoUrl} target="_blank" rel="noopener noreferrer" className="mt-1 block truncate text-caption text-accent-500">

@@ -15,6 +15,7 @@
   "fileTooLarge": "That file is larger than 200MB — choose a smaller video.",
   "invalidFileType": "Unsupported file type — use MP4, MOV, or WebM.",
   "noVideoError": "Choose a video file to upload.",
+  "hevcWarning": "This video looks like it uses HEVC encoding (common on iPhone), which doesn't play in some browsers. We'll still accept it and fix playback automatically, but if you have the option, exporting as H.264 avoids the extra processing step.",
   "descriptionField": "Description",
   "creatorNameField": "Creator name",
   "instagramField": "Instagram",

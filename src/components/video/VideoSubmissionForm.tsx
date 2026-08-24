@@ -4,13 +4,14 @@ import * as React from "react";
 import { useTranslations } from "next-intl";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { UploadCloud, FileVideo } from "lucide-react";
+import { UploadCloud, FileVideo, TriangleAlert } from "lucide-react";
 import { Field } from "@/components/ui/Field";
 import { Input, Textarea } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { useToast } from "@/components/ui/Toast";
 import { PlacePicker } from "@/components/place/PlacePicker";
 import { ActivityPicker } from "@/components/place/ActivityPicker";
+import { detectMp4VideoCodec, type DetectedVideoCodec } from "@/lib/utils/videoCodec";
 import type { PlaceSummary } from "@/lib/services/place.service";
 
 const MAX_FILE_BYTES = 200 * 1024 * 1024;
@@ -40,6 +41,7 @@ export function VideoSubmissionForm() {
   const [place, setPlace] = React.useState<PlaceSummary | null>(null);
   const [activityId, setActivityId] = React.useState<string | null>(null);
   const [videoUrl, setVideoUrl] = React.useState("");
+  const [detectedCodec, setDetectedCodec] = React.useState<DetectedVideoCodec | null>(null);
   const [fileName, setFileName] = React.useState("");
   const [uploadPercent, setUploadPercent] = React.useState<number | null>(null);
   const [uploadError, setUploadError] = React.useState<string | null>(null);
@@ -62,6 +64,7 @@ export function VideoSubmissionForm() {
 
     setUploadError(null);
     setVideoUrl("");
+    setDetectedCodec(null);
 
     if (!ACCEPTED_TYPES.includes(file.type)) {
       setUploadError(t("invalidFileType"));
@@ -71,6 +74,12 @@ export function VideoSubmissionForm() {
       setUploadError(t("fileTooLarge"));
       return;
     }
+
+    // Runs alongside the upload, not before it — it's a pure client-side
+    // parse (see lib/utils/videoCodec.ts), no reason to delay the actual
+    // upload start waiting on it. Informational only: never blocks
+    // submission, since playback gets fixed transparently either way.
+    detectMp4VideoCodec(file).then(setDetectedCodec);
 
     setFileName(file.name);
     setUploadPercent(0);
@@ -113,6 +122,7 @@ export function VideoSubmissionForm() {
           existingPlaceId: place.id,
           existingActivityId: activityId ?? undefined,
           videoUrl,
+          detectedCodec: detectedCodec ?? undefined,
           description: description || undefined,
           creatorName,
           instagram: instagram || undefined,
@@ -184,6 +194,13 @@ export function VideoSubmissionForm() {
           </div>
         )}
       </Field>
+
+      {detectedCodec === "hevc" && (
+        <div className="flex items-start gap-2.5 rounded-md border border-warning-500/30 bg-warning-tint px-3.5 py-3 text-body-sm text-ink-700">
+          <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-warning-500" aria-hidden="true" />
+          <span>{t("hevcWarning")}</span>
+        </div>
+      )}
 
       <Field label={t("descriptionField")}>
         {(fieldProps) => (

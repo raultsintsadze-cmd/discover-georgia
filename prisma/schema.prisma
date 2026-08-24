@@ -349,6 +349,9 @@ model Video {
   placeId          String
   creatorId        String?
   url              String
+  /// Carried over from VideoSubmission.detectedCodec on approval — see
+  /// that field's comment. Informational, not used to gate anything here either.
+  detectedCodec    String?
   posterUrl        String?
   durationSeconds  Int?
   status           VideoStatus @default(PENDING)
@@ -383,6 +386,12 @@ model VideoSubmission {
   existingPlaceId  String?
   existingActivityId String?
   videoUrl         String
+  /// Best-effort client-side sniff (see lib/utils/videoCodec.ts) — "hevc",
+  /// "h264", "vp9", "av1", "other", or "unknown". Informational only, never
+  /// gates submission: HEVC playback gets fixed transparently at read time
+  /// (VideoService wraps Video.url through Cloudinary's fetch-transform),
+  /// this just gives admins visibility into what's coming through.
+  detectedCodec    String?
   description      String?
   latitude         Float?
   longitude        Float?
