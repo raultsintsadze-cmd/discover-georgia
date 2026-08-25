@@ -68,15 +68,20 @@ export interface FeedPage {
  * page's Open Graph share-image (see place page's generateMetadata) and
  * a couple of currently-unused admin endpoints.
  *
- * Sorted and paginated in-memory rather than with DB-level skip/take:
- * Prisma can't express one ORDER BY across two different tables without
- * a raw SQL UNION, and at today's catalog size (dozens of rows) fetching
- * both in full per page is a non-issue. Revisit with a real UNION query
- * if the combined catalog ever grows into the thousands. Multiple videos
- * for the same place/activity share that name, so they sort adjacent to
- * each other (in upload order, since Array.sort is stable) rather than
- * being interleaved with other content — a deliberate simplicity choice,
- * not an oversight.
+ * Newest-first by video approval/publish date (Video.createdAt, set when
+ * an admin approves a submission — see VideoService.approveSubmission) —
+ * the point of a Discover feed is surfacing what's fresh, which
+ * alphabetical-by-name actively worked against (a video published today
+ * could sort dozens of cards deep behind everything from A-L). Video-less
+ * places carry no publish date to rank by, so they're appended as a
+ * lower-priority tail after every video-backed card, not interleaved —
+ * real content always outranks empty placeholders.
+ *
+ * Paginated in-memory rather than with DB-level skip/take: Prisma can't
+ * express one ORDER BY across two different tables without a raw SQL
+ * UNION, and at today's catalog size (dozens of rows) fetching both in
+ * full per page is a non-issue. Revisit with a real UNION query if the
+ * combined catalog ever grows into the thousands.
  */
 export async function getFeedPage(page: number, pageSize: number): Promise<FeedPage> {
   // Sequential, not Promise.all — production's DATABASE_URL runs with a
@@ -93,11 +98,12 @@ export async function getFeedPage(page: number, pageSize: number): Promise<FeedP
       place: { include: { region: true, category: true } },
       activity: { include: { nearPlace: true } },
     },
-    orderBy: { createdAt: "asc" },
+    orderBy: { createdAt: "desc" },
   });
   const videolessPlaces = await prisma.place.findMany({
     where: { status: PlaceStatus.PUBLISHED, videos: { none: { status: VideoStatus.PUBLISHED } } },
     include: { region: true, category: true },
+    orderBy: { createdAt: "desc" },
   });
 
   const videoItems: FeedItem[] = videos.map((v) => {
@@ -154,7 +160,11 @@ export async function getFeedPage(page: number, pageSize: number): Promise<FeedP
     video: null,
   }));
 
-  const merged = [...videoItems, ...placeholderItems].sort((a, b) => a.name.localeCompare(b.name));
+  // Video items already arrive newest-first from the query above;
+  // placeholders are simply appended after (also newest-place-first) —
+  // no further sort needed, and none of this is stable-sort-dependent
+  // the way the old alphabetical merge was.
+  const merged = [...videoItems, ...placeholderItems];
   const start = (page - 1) * pageSize;
   const items = merged.slice(start, start + pageSize);
 
