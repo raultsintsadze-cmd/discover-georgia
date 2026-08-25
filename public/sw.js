@@ -1,10 +1,20 @@
 // Minimal app-shell cache — not a full offline experience, just enough that
-// a repeat visit on a flaky connection still gets the shell instantly.
-// Deliberately narrow: only static, non-personalized routes are cached.
-// Never caches /api/**, auth, or any user-specific page — those must
-// always hit the network so data stays real, matching the rest of this
-// app's "never show stale data as current" principle.
-const CACHE_NAME = "discover-georgia-shell-v1";
+// a repeat visit on a flaky connection still gets the shell instead of
+// nothing. Deliberately narrow: only static, non-personalized routes are
+// cached. Never caches /api/**, auth, or any user-specific page — those
+// must always hit the network so data stays real, matching the rest of
+// this app's "never show stale data as current" principle.
+//
+// Network-first, not cache-first: Next.js content-hashes every JS chunk
+// filename per build, so a cache-first strategy here means a returning
+// visitor gets served yesterday's HTML — which references chunk files
+// that no longer exist on the server after the next deploy replaces
+// them, throwing ChunkLoadError (confirmed live: this exact bug, on this
+// exact file, right after a routine deploy). Network-first still meets
+// the "instant shell on a flaky connection" goal via the catch()
+// fallback, just without ever preferring stale content when the network
+// is actually up.
+const CACHE_NAME = "discover-georgia-shell-v2";
 const SHELL_URLS = ["/", "/discover", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
@@ -29,17 +39,14 @@ self.addEventListener("fetch", (event) => {
   if (!SHELL_URLS.includes(url.pathname)) return;
 
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const network = fetch(event.request)
-        .then((response) => {
-          if (response.ok) {
-            const copy = response.clone();
-            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
-          }
-          return response;
-        })
-        .catch(() => cached);
-      return cached ?? network;
-    })
+    fetch(event.request)
+      .then((response) => {
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
+        }
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
