@@ -23,6 +23,14 @@ export function VideoFeed({ initialItems, initialHasMore }: VideoFeedProps) {
   const viewedIds = React.useRef<Set<string>>(new Set());
   const [savedPlaceIds, setSavedPlaceIds] = React.useState<Set<string>>(new Set());
   const [savedActivityIds, setSavedActivityIds] = React.useState<Set<string>>(new Set());
+  // Shared across every card, not per-card local state — once true, it
+  // stays true for the rest of the session, including cards that haven't
+  // loaded yet. Browsers block unmuted autoplay only until the user has
+  // interacted with the page at all (doesn't need to be the same click
+  // that triggers a given video's play() call — see the container's
+  // onClick below); after that, muted playback is a UX choice, not a
+  // browser restriction, so there's no reason to keep resetting it.
+  const [muted, setMuted] = React.useState(true);
 
   // Fetched once per session so each card knows its initial saved state
   // without every card firing its own request. Two separate saved-item
@@ -109,6 +117,7 @@ export function VideoFeed({ initialItems, initialHasMore }: VideoFeedProps) {
   return (
     <div
       ref={containerRef}
+      onClick={() => setMuted(false)}
       className="no-scrollbar h-[calc(100dvh-4.5rem)] w-full snap-y snap-mandatory overflow-y-scroll"
     >
       {items.map((item) => (
@@ -117,6 +126,8 @@ export function VideoFeed({ initialItems, initialHasMore }: VideoFeedProps) {
           item={item}
           active={item.id === activeId}
           initialSaved={item.kind === "place" ? savedPlaceIds.has(item.placeId) : savedActivityIds.has(item.activityId)}
+          muted={muted}
+          onToggleMute={() => setMuted((m) => !m)}
           scrollContainerRef={containerRef}
           ref={(el) => {
             if (el) cardRefs.current.set(item.id, el);

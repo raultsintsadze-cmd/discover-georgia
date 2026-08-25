@@ -24,6 +24,9 @@ export interface FeedCardProps {
   /** Whether this card is the one currently in view — drives play/pause. */
   active: boolean;
   initialSaved: boolean;
+  /** Shared across the whole feed, not per-card — see VideoFeed's comment on why. */
+  muted: boolean;
+  onToggleMute: () => void;
   /** The VideoFeed's scroll container, used to derive per-card scroll progress for the parallax zoom. */
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
 }
@@ -63,7 +66,7 @@ function RailButton({
 }
 
 export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function FeedCard(
-  { item, active, initialSaved, scrollContainerRef },
+  { item, active, initialSaved, muted, onToggleMute, scrollContainerRef },
   ref
 ) {
   const { status } = useSession();
@@ -82,7 +85,6 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
   const [addToTripOpen, setAddToTripOpen] = React.useState(false);
   const [inquireOpen, setInquireOpen] = React.useState(false);
   const videoRef = React.useRef<HTMLVideoElement>(null);
-  const [muted, setMuted] = React.useState(true);
   const localRef = React.useRef<HTMLDivElement>(null);
 
   const setRefs = React.useCallback(
@@ -198,7 +200,15 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
         <motion.button
           type="button"
           whileTap={{ scale: 0.85 }}
-          onClick={() => setMuted((m) => !m)}
+          onClick={(e) => {
+            // Stops here — otherwise it'd also bubble to VideoFeed's
+            // container onClick, which unconditionally forces muted to
+            // false and would fight this button's own toggle (e.g. a mute
+            // tap meant to turn sound *off* would immediately get
+            // overridden back to unmuted by the container handler).
+            e.stopPropagation();
+            onToggleMute();
+          }}
           aria-label={muted ? t("video.unmute") : t("video.mute")}
           className="absolute right-4 z-10 flex h-touch w-touch items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm"
           style={{ top: "calc(env(safe-area-inset-top) + 1rem)" }}
