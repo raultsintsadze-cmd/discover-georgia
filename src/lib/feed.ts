@@ -61,18 +61,24 @@ export interface FeedPage {
  * if the combined catalog ever grows into the thousands.
  */
 export async function getFeedPage(page: number, pageSize: number): Promise<FeedPage> {
-  const [places, activities] = await Promise.all([
-    prisma.place.findMany({
-      where: { status: PlaceStatus.PUBLISHED },
-      include: { region: true, category: true, featuredVideo: true },
-      orderBy: { name: "asc" },
-    }),
-    prisma.activity.findMany({
-      where: { featuredVideoId: { not: null } },
-      include: { featuredVideo: true, nearPlace: true },
-      orderBy: { name: "asc" },
-    }),
-  ]);
+  // Sequential, not Promise.all — production's DATABASE_URL runs with
+  // connection_limit=1 (the transaction-mode pooler's prepared-statement
+  // constraint, see schema.prisma's datasource comment), so two queries
+  // fired concurrently from the same request contend for the single
+  // connection instead of actually running in parallel. Under any real
+  // traffic that's how you get "Timed out fetching a new connection from
+  // the connection pool" (confirmed live in production logs) instead of
+  // the small serial-latency cost this avoids.
+  const places = await prisma.place.findMany({
+    where: { status: PlaceStatus.PUBLISHED },
+    include: { region: true, category: true, featuredVideo: true },
+    orderBy: { name: "asc" },
+  });
+  const activities = await prisma.activity.findMany({
+    where: { featuredVideoId: { not: null } },
+    include: { featuredVideo: true, nearPlace: true },
+    orderBy: { name: "asc" },
+  });
 
   const placeItems: FeedItem[] = places.map((p) => ({
     kind: "place",
