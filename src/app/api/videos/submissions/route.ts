@@ -13,6 +13,11 @@ const bodySchema = z.object({
   // Client-side sniff (see lib/utils/videoCodec.ts) — trusted informational
   // data, not re-verified server-side. Never gates the submission.
   detectedCodec: z.enum(["h264", "hevc", "vp9", "av1", "other", "unknown"]).optional(),
+  // Parsed from DMS input client-side (see lib/utils/parseDMSCoordinate.ts)
+  // — an optional override for this specific video's location, when it
+  // differs from (or is more precise than) its place's own coordinates.
+  latitude: z.number().min(-90).max(90).optional(),
+  longitude: z.number().min(-180).max(180).optional(),
   description: z.string().trim().max(500).optional(),
   creatorName: z.string().trim().min(1).max(100),
   instagram: z.string().trim().max(100).optional(),
@@ -65,6 +70,8 @@ export async function POST(request: NextRequest) {
     existingActivityId: activityId,
     videoUrl: parsed.data.videoUrl,
     detectedCodec: parsed.data.detectedCodec,
+    latitude: parsed.data.latitude,
+    longitude: parsed.data.longitude,
     description: parsed.data.description,
     creatorName: parsed.data.creatorName,
     instagram: parsed.data.instagram,

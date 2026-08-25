@@ -41,6 +41,9 @@ export interface VideoDTO {
   url: string;
   /** Client-side sniff at submission time — informational, see schema.prisma's Video.detectedCodec comment. */
   detectedCodec: string | null;
+  /** Overrides the place/activity's own coordinates for this specific video, when set — see schema.prisma's Video.latitude comment. */
+  latitude: number | null;
+  longitude: number | null;
   posterUrl: string | null;
   durationSeconds: number | null;
   creatorName: string | null;

@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/Toast";
 import { PlacePicker } from "@/components/place/PlacePicker";
 import { ActivityPicker } from "@/components/place/ActivityPicker";
 import { detectMp4VideoCodec, type DetectedVideoCodec } from "@/lib/utils/videoCodec";
+import { parseDMSCoordinate } from "@/lib/utils/parseDMSCoordinate";
 import type { PlaceSummary } from "@/lib/services/place.service";
 
 const MAX_FILE_BYTES = 200 * 1024 * 1024;
@@ -45,6 +46,8 @@ export function VideoSubmissionForm() {
   const [fileName, setFileName] = React.useState("");
   const [uploadPercent, setUploadPercent] = React.useState<number | null>(null);
   const [uploadError, setUploadError] = React.useState<string | null>(null);
+  const [locationInput, setLocationInput] = React.useState("");
+  const [locationError, setLocationError] = React.useState<string | null>(null);
   const [description, setDescription] = React.useState("");
   const [creatorName, setCreatorName] = React.useState("");
   const [instagram, setInstagram] = React.useState("");
@@ -112,6 +115,18 @@ export function VideoSubmissionForm() {
       setError(t("noVideoError"));
       return;
     }
+
+    // Optional field, but if they typed something it has to actually
+    // parse — silently dropping an unparseable location would be worse
+    // than telling them now, before the submission is created.
+    const trimmedLocation = locationInput.trim();
+    const coordinate = trimmedLocation ? parseDMSCoordinate(trimmedLocation) : null;
+    if (trimmedLocation && !coordinate) {
+      setLocationError(t("locationParseError"));
+      return;
+    }
+    setLocationError(null);
+
     setError(null);
     setLoading(true);
     try {
@@ -123,6 +138,8 @@ export function VideoSubmissionForm() {
           existingActivityId: activityId ?? undefined,
           videoUrl,
           detectedCodec: detectedCodec ?? undefined,
+          latitude: coordinate?.latitude,
+          longitude: coordinate?.longitude,
           description: description || undefined,
           creatorName,
           instagram: instagram || undefined,
@@ -205,6 +222,24 @@ export function VideoSubmissionForm() {
       <Field label={t("descriptionField")}>
         {(fieldProps) => (
           <Textarea {...fieldProps} value={description} onChange={(e) => setDescription(e.target.value)} rows={3} />
+        )}
+      </Field>
+
+      <Field
+        label={t("locationField")}
+        helperText={locationError ?? t("locationHelper")}
+        errorText={locationError ?? undefined}
+      >
+        {(fieldProps) => (
+          <Input
+            {...fieldProps}
+            value={locationInput}
+            onChange={(e) => {
+              setLocationInput(e.target.value);
+              if (locationError) setLocationError(null);
+            }}
+            placeholder={t("locationPlaceholder")}
+          />
         )}
       </Field>
 

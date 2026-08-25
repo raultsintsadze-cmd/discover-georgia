@@ -17,6 +17,8 @@ interface VideoRow {
   activityId: string | null;
   url: string;
   detectedCodec: string | null;
+  latitude: number | null;
+  longitude: number | null;
   posterUrl: string | null;
   durationSeconds: number | null;
   creator: { displayName: string } | null;
@@ -29,6 +31,8 @@ function toDTO(video: VideoRow): VideoDTO {
     activityId: video.activityId,
     url: toH264PlaybackUrl(video.url),
     detectedCodec: video.detectedCodec,
+    latitude: video.latitude,
+    longitude: video.longitude,
     posterUrl: video.posterUrl,
     durationSeconds: video.durationSeconds,
     creatorName: video.creator?.displayName ?? null,
@@ -165,6 +169,8 @@ export class PrismaVideoService implements VideoService {
         creatorId: creator?.id,
         url: submission.videoUrl,
         detectedCodec: submission.detectedCodec,
+        latitude: submission.latitude,
+        longitude: submission.longitude,
         status: VideoStatus.PUBLISHED,
         sourceSubmissionId: submission.id,
       },

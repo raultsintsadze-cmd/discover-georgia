@@ -73,8 +73,11 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
   // Both hooks always called (rules-of-hooks) — only one's state is used,
   // picked by item.kind below. Each is a cheap no-op fetch/toggle target
   // for the kind it doesn't apply to since it's never invoked.
-  const placeSaved = useSavedPlace(item.kind === "place" ? item.id : "", item.kind === "place" && initialSaved);
-  const activitySaved = useSavedActivity(item.kind === "activity" ? item.id : "", item.kind === "activity" && initialSaved);
+  const placeSaved = useSavedPlace(item.kind === "place" ? item.placeId : "", item.kind === "place" && initialSaved);
+  const activitySaved = useSavedActivity(
+    item.kind === "activity" ? item.activityId : "",
+    item.kind === "activity" && initialSaved
+  );
   const { saved, toggle } = item.kind === "place" ? placeSaved : activitySaved;
   const [addToTripOpen, setAddToTripOpen] = React.useState(false);
   const [inquireOpen, setInquireOpen] = React.useState(false);
@@ -247,7 +250,7 @@ export const FeedCard = React.forwardRef<HTMLDivElement, FeedCardProps>(function
       </motion.div>
 
       {item.kind === "place" ? (
-        <AddToTripSheet open={addToTripOpen} onOpenChange={setAddToTripOpen} placeId={item.id} placeName={item.name} />
+        <AddToTripSheet open={addToTripOpen} onOpenChange={setAddToTripOpen} placeId={item.placeId} placeName={item.name} />
       ) : (
         <InquireSheet open={inquireOpen} onOpenChange={setInquireOpen} activitySlug={item.slug} />
       )}

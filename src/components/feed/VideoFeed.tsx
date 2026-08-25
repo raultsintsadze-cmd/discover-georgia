@@ -116,7 +116,7 @@ export function VideoFeed({ initialItems, initialHasMore }: VideoFeedProps) {
           key={item.id}
           item={item}
           active={item.id === activeId}
-          initialSaved={item.kind === "place" ? savedPlaceIds.has(item.id) : savedActivityIds.has(item.id)}
+          initialSaved={item.kind === "place" ? savedPlaceIds.has(item.placeId) : savedActivityIds.has(item.activityId)}
           scrollContainerRef={containerRef}
           ref={(el) => {
             if (el) cardRefs.current.set(item.id, el);

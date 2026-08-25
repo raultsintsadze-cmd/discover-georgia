@@ -352,6 +352,14 @@ model Video {
   /// Carried over from VideoSubmission.detectedCodec on approval — see
   /// that field's comment. Informational, not used to gate anything here either.
   detectedCodec    String?
+  /// Carried over from VideoSubmission.latitude/longitude on approval when
+  /// provided — an override for cases where the video's actual spot (a
+  /// specific viewpoint/trailhead/activity site) is more precise than, or
+  /// differs from, its Place/Activity's own stored coordinates. Nullable:
+  /// most videos don't need this, and fall back to the place/activity's
+  /// coordinates wherever these are read (see feed.ts).
+  latitude         Float?
+  longitude        Float?
   posterUrl        String?
   durationSeconds  Int?
   status           VideoStatus @default(PENDING)
@@ -393,6 +401,13 @@ model VideoSubmission {
   /// this just gives admins visibility into what's coming through.
   detectedCodec    String?
   description      String?
+  /// Two purposes depending on whether existingPlaceId is set: (1) when
+  /// linked to an existing place, an optional precise-location override
+  /// for the video itself (parsed from DMS input — see
+  /// lib/utils/parseDMSCoordinate.ts — and carried over to Video.latitude/
+  /// longitude on approval); (2) when suggesting a brand-new place
+  /// (existingPlaceId null), the coordinates for that place-to-be — see
+  /// approveSubmission's comment on why that promotion isn't automatic.
   latitude         Float?
   longitude        Float?
   categoryId       String?
