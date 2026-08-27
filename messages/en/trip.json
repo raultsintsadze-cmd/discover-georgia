@@ -53,14 +53,12 @@
   },
   "route": {
     "checkingRoute": "Checking route…",
-    "notCalculated": "Route not calculated yet",
     "recalculateButton": "Recalculate",
-    "calculateButton": "Calculate route",
     "calculateErrorTitle": "Couldn't calculate route"
   },
   "driverSelector": {
     "noDrivers": "No drivers available yet.",
-    "calculatePrompt": "Calculate a route (Map tab) to see per-driver prices.",
+    "calculatePrompt": "Add at least two places to see per-driver prices.",
     "selectErrorTitle": "Couldn't select driver",
     "selectedToast": "Driver selected",
     "tripsCount": "{count} trips",
@@ -89,7 +87,7 @@
     "statusLabel": "Status:",
     "viewRequestLink": "View request",
     "helperText": "Sends your itinerary, dates, and estimated price to a driver and to Discover Georgia.",
-    "noRouteWarning": "Calculate a route (Map tab) before requesting this trip.",
+    "noRouteWarning": "Add at least two places so we can calculate a route before requesting this trip.",
     "passengersLabel": "Passengers",
     "notesLabel": "Notes",
     "notesHelper": "Optional — anything the driver should know.",
@@ -101,17 +99,17 @@
     "totalDistanceLabel": "Total distance",
     "totalDrivingTimeLabel": "Total driving time",
     "estimatedPriceLabel": "ESTIMATED PRICE",
-    "routeUnavailable": "Route distance, driving time, and estimated price aren't available yet — calculate a route from the Map tab.",
+    "routeUnavailable": "Route distance, driving time, and estimated price aren't available yet — add at least two places to calculate a route.",
     "driversHeading": "Drivers"
   },
   "view": {
     "deletedMessage": "Trip deleted.",
     "editAriaLabel": "Edit trip",
     "askAiButton": "Ask AI to help plan",
-    "tabListAriaLabel": "Trip view",
-    "tabItinerary": "Itinerary",
-    "tabMap": "Map",
-    "tabBudget": "Budget",
+    "stepPlaces": "Your places",
+    "stepDriver": "Vehicle & driver",
+    "stepRoute": "Route & cost",
+    "stepRequest": "Request this trip",
     "travelerCount": "{count, plural, one {# traveler} other {# travelers}}"
   }
 }

@@ -6,29 +6,44 @@ import { useTranslations } from "next-intl";
 import { Pencil, Users, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { TripItinerary } from "./TripItinerary";
-import { TripRouteSection } from "./TripRouteSection";
-import { TripBudget } from "./TripBudget";
+import { DriverSelector } from "./DriverSelector";
+import { TripRouteAndCost } from "./TripRouteAndCost";
+import { RequestTripPanel } from "./RequestTripPanel";
 import { TripFormSheet } from "./TripFormSheet";
 import { formatDateRange } from "@/lib/utils/format";
-import { cn } from "@/lib/utils/cn";
 import type { TripDTO } from "@/lib/services/trip.service";
 import type { PlaceSummary } from "@/lib/services/place.service";
 import type { MapPlace } from "@/components/map/PlaceMarkers";
 
-type Tab = "itinerary" | "map" | "budget";
-const TAB_KEYS: { key: Tab; labelKey: string }[] = [
-  { key: "itinerary", labelKey: "view.tabItinerary" },
-  { key: "map", labelKey: "view.tabMap" },
-  { key: "budget", labelKey: "view.tabBudget" },
-];
+function SectionHeading({ step, title }: { step: number; title: string }) {
+  return (
+    <div className="mb-3 flex items-center gap-2">
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-tint text-caption font-semibold text-accent-600">
+        {step}
+      </span>
+      <p className="text-h3 text-ink-900">{title}</p>
+    </div>
+  );
+}
 
+/**
+ * One continuous, sectioned flow (places -> driver -> route/cost -> request)
+ * replacing the old itinerary/map/budget tab bar — see docs/architecture.md
+ * for why: those three tabs plus a separate /trip/ai chat meant requesting a
+ * trip required visiting the Map tab (to trigger route calculation, the only
+ * place that did) and then the Budget tab (for driver + submit), neither of
+ * which most people found on their own. Sections stay always-visible with
+ * soft placeholders (matching RequestTripPanel's existing
+ * disabled-until-routeComputed pattern) rather than a hard-gated wizard,
+ * since editing an itinerary is iterative, not a one-shot checkout.
+ */
 export function TripView({ initialTrip }: { initialTrip: TripDTO }) {
   const t = useTranslations("trip");
   const [trip, setTrip] = React.useState(initialTrip);
-  const [tab, setTab] = React.useState<Tab>("itinerary");
   const [editOpen, setEditOpen] = React.useState(false);
   const [deleted, setDeleted] = React.useState(false);
   const [mapPlaces, setMapPlaces] = React.useState<MapPlace[]>([]);
+  const [routeComputed, setRouteComputed] = React.useState(false);
 
   const uniquePlaceIds = React.useMemo(
     () => [...new Set(trip.days.flatMap((d) => d.places.map((p) => p.placeId)))],
@@ -37,12 +52,12 @@ export function TripView({ initialTrip }: { initialTrip: TripDTO }) {
   const placeIdsKey = uniquePlaceIds.join(",");
 
   // The itinerary API deliberately doesn't carry coordinates (see
-  // TripDayDTO) — fetch them fresh whenever the trip's place set changes,
-  // so the map tab stays correct after add/remove without threading
-  // location data through every mutation callback.
+  // TripDayDTO) — fetch them fresh whenever the trip's place set changes.
+  // Runs unconditionally now (previously gated on the Map tab being active)
+  // since the route/cost section is always on-screen in the single-flow layout.
   React.useEffect(() => {
-    if (tab !== "map" || uniquePlaceIds.length === 0) {
-      if (uniquePlaceIds.length === 0) setMapPlaces([]);
+    if (uniquePlaceIds.length === 0) {
+      setMapPlaces([]);
       return;
     }
     fetch(`/api/places/by-ids?ids=${uniquePlaceIds.join(",")}`)
@@ -60,7 +75,7 @@ export function TripView({ initialTrip }: { initialTrip: TripDTO }) {
       )
       .catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, placeIdsKey]);
+  }, [placeIdsKey]);
 
   if (deleted) {
     return (
@@ -100,28 +115,31 @@ export function TripView({ initialTrip }: { initialTrip: TripDTO }) {
         </Link>
       </div>
 
-      <div role="tablist" aria-label={t("view.tabListAriaLabel")} className="mt-4 flex gap-1 border-b border-border px-5">
-        {TAB_KEYS.map((tabDef) => (
-          <button
-            key={tabDef.key}
-            type="button"
-            role="tab"
-            aria-selected={tab === tabDef.key}
-            onClick={() => setTab(tabDef.key)}
-            className={cn(
-              "border-b-2 px-3 py-2.5 text-body-sm font-medium",
-              tab === tabDef.key ? "border-accent-500 text-accent-600" : "border-transparent text-ink-500"
-            )}
-          >
-            {t(tabDef.labelKey)}
-          </button>
-        ))}
-      </div>
+      <div className="mt-6 flex flex-col gap-8 pb-8">
+        <section className="px-5">
+          <SectionHeading step={1} title={t("view.stepPlaces")} />
+          <TripItinerary trip={trip} onTripChange={setTrip} />
+        </section>
 
-      <div className="mt-4 flex-1">
-        {tab === "itinerary" && <TripItinerary trip={trip} onTripChange={setTrip} />}
-        {tab === "map" && <TripRouteSection tripId={trip.id} places={mapPlaces} />}
-        {tab === "budget" && <TripBudget trip={trip} onTripChange={setTrip} />}
+        <section className="px-5">
+          <SectionHeading step={2} title={t("view.stepDriver")} />
+          <DriverSelector
+            tripId={trip.id}
+            preferredDriverId={trip.preferredDriverId}
+            onSelected={(driverId) => setTrip({ ...trip, preferredDriverId: driverId })}
+            routeComputed={routeComputed}
+          />
+        </section>
+
+        <section className="px-5">
+          <SectionHeading step={3} title={t("view.stepRoute")} />
+          <TripRouteAndCost trip={trip} places={mapPlaces} onRouteComputedChange={setRouteComputed} />
+        </section>
+
+        <section className="px-5">
+          <SectionHeading step={4} title={t("view.stepRequest")} />
+          <RequestTripPanel tripId={trip.id} defaultPassengers={trip.travelers} routeComputed={routeComputed} />
+        </section>
       </div>
 
       <TripFormSheet

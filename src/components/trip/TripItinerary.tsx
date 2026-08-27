@@ -63,7 +63,7 @@ export function TripItinerary({ trip, onTripChange }: { trip: TripDTO; onTripCha
   }
 
   return (
-    <div className="flex flex-col gap-4 px-5 pb-8">
+    <div className="flex flex-col gap-4">
       {trip.days.map((day) => (
         <div key={day.id} className="flex flex-col gap-2">
           <div className="flex items-baseline gap-2">

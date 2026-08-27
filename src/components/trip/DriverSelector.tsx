@@ -25,14 +25,22 @@ export interface DriverSelectorProps {
   tripId: string;
   preferredDriverId: string | null;
   onSelected: (driverId: string) => void;
+  /**
+   * Lifted from the Route & cost section, which is now a permanently-mounted
+   * sibling instead of a tab this component used to remount into — so a
+   * fetch-once-on-mount effect would otherwise keep showing stale
+   * ("—") per-driver prices even after route calculation completes.
+   * Included in the fetch effect's deps so per-driver prices refresh the
+   * moment a route becomes available (or gets invalidated by a place edit).
+   */
+  routeComputed: boolean;
 }
 
 /** Spec §27 driver cards: photo/name/rating/vehicle/languages/trips/regions/estimated price + Select. */
-export function DriverSelector({ tripId, preferredDriverId, onSelected }: DriverSelectorProps) {
+export function DriverSelector({ tripId, preferredDriverId, onSelected, routeComputed }: DriverSelectorProps) {
   const t = useTranslations("trip");
   const { toast } = useToast();
   const [loading, setLoading] = React.useState(true);
-  const [routeComputed, setRouteComputed] = React.useState(false);
   const [drivers, setDrivers] = React.useState<DriverWithPrice[]>([]);
   const [selectingId, setSelectingId] = React.useState<string | null>(null);
 
@@ -41,11 +49,10 @@ export function DriverSelector({ tripId, preferredDriverId, onSelected }: Driver
     fetch(`/api/trips/${tripId}/drivers`)
       .then((res) => res.json())
       .then((body) => {
-        setRouteComputed(body.data?.routeComputed ?? false);
         setDrivers(body.data?.drivers ?? []);
       })
       .finally(() => setLoading(false));
-  }, [tripId]);
+  }, [tripId, routeComputed]);
 
   async function handleSelect(driverId: string) {
     setSelectingId(driverId);
