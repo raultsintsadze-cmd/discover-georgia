@@ -12,7 +12,8 @@ import { useToast } from "@/components/ui/Toast";
 import { PlacePicker } from "@/components/place/PlacePicker";
 import { ActivityPicker } from "@/components/place/ActivityPicker";
 import { detectMp4VideoCodec, type DetectedVideoCodec } from "@/lib/utils/videoCodec";
-import { parseDMSCoordinate } from "@/lib/utils/parseDMSCoordinate";
+import { parseCoordinateInput } from "@/lib/utils/parseCoordinateInput";
+import { formatCoordinate } from "@/lib/utils/format";
 import type { PlaceSummary } from "@/lib/services/place.service";
 
 const MAX_FILE_BYTES = 200 * 1024 * 1024;
@@ -60,6 +61,12 @@ export function VideoSubmissionForm() {
   React.useEffect(() => {
     if (session?.user?.email) setContactEmail(session.user.email);
   }, [session?.user?.email]);
+
+  // Live preview as they type/paste — cheap regex work, no debounce needed.
+  const detectedCoordinate = React.useMemo(
+    () => (locationInput.trim() ? parseCoordinateInput(locationInput) : null),
+    [locationInput]
+  );
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -119,9 +126,7 @@ export function VideoSubmissionForm() {
     // Optional field, but if they typed something it has to actually
     // parse — silently dropping an unparseable location would be worse
     // than telling them now, before the submission is created.
-    const trimmedLocation = locationInput.trim();
-    const coordinate = trimmedLocation ? parseDMSCoordinate(trimmedLocation) : null;
-    if (trimmedLocation && !coordinate) {
+    if (locationInput.trim() && !detectedCoordinate) {
       setLocationError(t("locationParseError"));
       return;
     }
@@ -138,8 +143,8 @@ export function VideoSubmissionForm() {
           existingActivityId: activityId ?? undefined,
           videoUrl,
           detectedCodec: detectedCodec ?? undefined,
-          latitude: coordinate?.latitude,
-          longitude: coordinate?.longitude,
+          latitude: detectedCoordinate?.latitude,
+          longitude: detectedCoordinate?.longitude,
           description: description || undefined,
           creatorName,
           instagram: instagram || undefined,
@@ -227,7 +232,12 @@ export function VideoSubmissionForm() {
 
       <Field
         label={t("locationField")}
-        helperText={locationError ?? t("locationHelper")}
+        helperText={
+          locationError ??
+          (detectedCoordinate
+            ? t("locationDetected", { formatted: formatCoordinate(detectedCoordinate.latitude, detectedCoordinate.longitude) })
+            : t("locationHelper"))
+        }
         errorText={locationError ?? undefined}
       >
         {(fieldProps) => (
